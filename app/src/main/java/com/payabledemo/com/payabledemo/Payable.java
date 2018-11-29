@@ -51,7 +51,7 @@ public class Payable extends AppCompatActivity {
         return ccLast4;
     }
 
-    public void setCcLast4(String ccLast4) {
+    private void setCcLast4(String ccLast4) {
         this.ccLast4 = ccLast4;
     }
 
@@ -59,7 +59,7 @@ public class Payable extends AppCompatActivity {
         return cardType;
     }
 
-    public void setCardType(int cardType) {
+    private void setCardType(int cardType) {
         this.cardType = cardType;
     }
 
@@ -67,7 +67,7 @@ public class Payable extends AppCompatActivity {
         return txId;
     }
 
-    public void setTxId(String txId) {
+    private void setTxId(String txId) {
         this.txId = txId;
     }
 
@@ -75,7 +75,7 @@ public class Payable extends AppCompatActivity {
         return terminalId;
     }
 
-    public void setTerminalId(String terminalId) {
+    private void setTerminalId(String terminalId) {
         this.terminalId = terminalId;
     }
 
@@ -83,7 +83,7 @@ public class Payable extends AppCompatActivity {
         return mid;
     }
 
-    public void setMid(String mid) {
+    private void setMid(String mid) {
         this.mid = mid;
     }
 
@@ -91,7 +91,7 @@ public class Payable extends AppCompatActivity {
         return isEmv;
     }
 
-    public void setIsEmv(int isEmv) {
+    private void setIsEmv(int isEmv) {
         this.isEmv = isEmv;
     }
 
@@ -99,7 +99,7 @@ public class Payable extends AppCompatActivity {
         return txnStatus;
     }
 
-    public void setTxnStatus(int txnStatus) {
+    private void setTxnStatus(int txnStatus) {
         this.txnStatus = txnStatus;
     }
 
@@ -107,7 +107,7 @@ public class Payable extends AppCompatActivity {
         return statusCode;
     }
 
-    public void setStatusCode(int statusCode) {
+    private void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
     }
 
@@ -115,7 +115,7 @@ public class Payable extends AppCompatActivity {
         return saleAmount;
     }
 
-    public void setSaleAmount(double saleAmount) {
+    private void setSaleAmount(double saleAmount) {
         this.saleAmount = saleAmount;
     }
 
@@ -123,7 +123,7 @@ public class Payable extends AppCompatActivity {
         return clientId;
     }
 
-    public void setClientId(String clientId) {
+    private void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
@@ -131,11 +131,11 @@ public class Payable extends AppCompatActivity {
         return clientName;
     }
 
-    public void setClientName(String clientName) {
+    private void setClientName(String clientName) {
         this.clientName = clientName;
     }
 
-    public void setIntentResponse(Intent data) {
+    private void setIntentResponse(Intent data) {
 
         if(data != null) {
             this.statusCode = data.getIntExtra("STATUS_CODE", 0);

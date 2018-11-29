@@ -2,13 +2,14 @@
 Android Application
 
 ### Initialization
-Copy this code to string.xml file in resources directory and change your detaild:
+Copy this code to string.xml file in resources directory and change your information
+:
 ```xml
 <string name="payable_client_id">Kangaroo</string>
 <string name="payable_client_name">155636</string>
 ```
 
-Extend your Activity class fom Payable class
+Extend your Activity class from Payable class
 ```java
 public class MainActivity extends Payable {}
 ```
@@ -21,6 +22,7 @@ public class MainActivity extends Payable {}
 On click listener call the method 
 ```java
 private void payableSale() {
+    // Set your EditText value
     saleAmount = Double.parseDouble(edtAmount.getText().toString());
     startPayment(saleAmount, new PayableListener() {
         @Override
