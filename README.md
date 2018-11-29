@@ -3,23 +3,23 @@ Android Application
 
 ### Initialization
 Copy this code to string.xml file in resources directory and change your detaild:
-```
+```xml
 <string name="payable_client_id">Kangaroo</string>
 <string name="payable_client_name">155636</string>
 ```
 
 Extend your Activity class fom Payable class
-```Java
+```java
 public class MainActivity extends Payable {}
 ```
 
 Extend your Activity class fom Payable class
-```Java
+```java
 public class MainActivity extends Payable {}
 ```
 
 On click listener call the method 
-```Java
+```java
 private void payableSale() {
     saleAmount = Double.parseDouble(edtAmount.getText().toString());
     startPayment(saleAmount, new PayableListener() {
@@ -41,7 +41,7 @@ private void payableSale() {
 ```
 
 Return Payable Object
-```Java
+```java
 payable.getStatusCode();
 payable.getSaleAmount();
 payable.getCcLast4();
@@ -54,7 +54,7 @@ payable.getTxnStatus();
 ```
 
 Return Status codes
-```Java
+```java
 PAYABLE_REQUEST_CODE = 3569;
 PAYABLE_STATUS_SUCCESS = 222;
 PAYABLE_STATUS_NOT_LOGIN = 555;
