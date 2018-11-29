@@ -3,7 +3,7 @@ Android Application
 
 ### Initialization
 Copy this code to string.xml file in resources directory and change your detaild:
-```XML
+```
 <string name="payable_client_id">Kangaroo</string>
 <string name="payable_client_name">155636</string>
 ```
