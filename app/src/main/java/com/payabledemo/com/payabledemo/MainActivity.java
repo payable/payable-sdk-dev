@@ -48,6 +48,9 @@ public class MainActivity extends Payable {
 
         saleAmount = Double.parseDouble(edtAmount.getText().toString());
 
+        setClientId("566");
+        setClientName("Daraz");
+
         startPayment(saleAmount, new PayableListener() {
             @Override
             public void onPaymentSuccess(Payable payable) {

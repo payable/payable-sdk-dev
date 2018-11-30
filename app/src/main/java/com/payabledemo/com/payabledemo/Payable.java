@@ -1,17 +1,9 @@
 package com.payabledemo.com.payabledemo;
 
-
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
-
 import java.text.DecimalFormat;
-
-/**
- * Created by Dell on 2018-05-21.
- */
 
 public class Payable extends AppCompatActivity {
 
@@ -43,8 +35,8 @@ public class Payable extends AppCompatActivity {
 
 
     public void Payable() {
-        setClientId(getString(R.string.payable_client_id));
-        setClientName(getString(R.string.payable_client_name));
+        //setClientId(getString(R.string.payable_client_id));
+        //setClientName(getString(R.string.payable_client_name));
     }
 
     public String getCcLast4() {
@@ -123,7 +115,7 @@ public class Payable extends AppCompatActivity {
         return clientId;
     }
 
-    private void setClientId(String clientId) {
+    public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
@@ -131,11 +123,11 @@ public class Payable extends AppCompatActivity {
         return clientName;
     }
 
-    private void setClientName(String clientName) {
+    public void setClientName(String clientName) {
         this.clientName = clientName;
     }
 
-    private void setIntentResponse(Intent data) {
+    public void setIntentResponse(Intent data) {
 
         if(data != null) {
             this.statusCode = data.getIntExtra("STATUS_CODE", 0);
