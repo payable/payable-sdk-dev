@@ -2,15 +2,14 @@
 Android Application
 
 ### Initialization
-Copy this code to string.xml file in resources directory and change your information
-Import Payable.java & PayableListener.java
+1. Copy this code to your string.xml file in resources directory and change it with your information
 
 ```xml
 <string name="payable_client_id">Kangaroo</string>
 <string name="payable_client_name">155636</string>
 ```
 
-Extend your Activity class from Payable class
+2. Copy Payable.java & PayableListener.java and extend your activity class from Payable.java, makesure Payable.java can access your R.java file in order to access your string.xml
 ```java
 public class MainActivity extends Payable {}
 ```
@@ -51,12 +50,12 @@ payable.getIsEmv();
 payable.getTxnStatus();
 ```
 
-Return Status codes
+Return Status Codes
 ```java
-PAYABLE_REQUEST_CODE = 3569;
-PAYABLE_STATUS_SUCCESS = 222;
-PAYABLE_STATUS_NOT_LOGIN = 555;
-PAYABLE_STATUS_FAILED = 0;
-PAYABLE_INVALID_AMOUNT = 999;
-PAYABLE_APP_NOT_INSTALLED = 888;
+Payable.PAYABLE_REQUEST_CODE : 3569;
+Payable.PAYABLE_STATUS_SUCCESS : 222;
+Payable.PAYABLE_STATUS_NOT_LOGIN : 555;
+Payable.PAYABLE_STATUS_FAILED : 0;
+Payable.PAYABLE_INVALID_AMOUNT : 999;
+Payable.PAYABLE_APP_NOT_INSTALLED : 888;
 ```
