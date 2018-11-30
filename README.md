@@ -14,11 +14,6 @@ Extend your Activity class from Payable class
 public class MainActivity extends Payable {}
 ```
 
-Extend your Activity class fom Payable class
-```java
-public class MainActivity extends Payable {}
-```
-
 On click listener call the method 
 ```java
 private void payableSale() {
