@@ -33,8 +33,7 @@ public class Payable extends AppCompatActivity {
 
     PayableListener payableListener;
 
-    public void Payable() {
-    }
+    public void Payable() { }
 
     public String getCcLast4() {
         return ccLast4;
