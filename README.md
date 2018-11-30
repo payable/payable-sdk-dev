@@ -22,6 +22,7 @@ private void payableSale() {
     saleAmount = Double.parseDouble(edtAmount.getText().toString());
     setClientId("YOUR_ID");
     setClientName("YOUR_NAME");
+    
     startPayment(saleAmount, new PayableListener() {
         @Override
         public void onPaymentSuccess(Payable payable) {
