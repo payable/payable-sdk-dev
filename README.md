@@ -9,14 +9,12 @@ Android Application
     - Sync the project
 
 2. Extend the class from your activity class
-
 ```java
 import com.payable.sdk.Payable;
-
 public class MainActivity extends Payable {}
 ```
 
-3. On click listener call the method
+* On click listener call the method
 ```java
 private void payableSale() {
 
