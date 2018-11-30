@@ -4,11 +4,11 @@ Android Application
 ### Initialization
 
 1. Import the payablesdk.aar file
-    - ** File > New > New Module > Import .JAR/.AAR Package > Select your payablesdk.aar file > Click finish **
-    - ** File > Project Structure > app > Dependencies > Add Button > Module dependency > Select payablesdk > Click Ok and Complete **
-    - ** Sync the project **
+    - File > New > New Module > Import .JAR/.AAR Package > Select your payablesdk.aar file > Click finish
+    - File > Project Structure > app > Dependencies > Add Button > Module dependency > Select payablesdk > Click Ok and Complete
+    - Sync the project
 
-2. import the payablesdk library and extend the class from your activity class
+2. Extend the class from your activity class
 
 ```java
 import com.payable.sdk.Payable;
