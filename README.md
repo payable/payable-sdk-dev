@@ -4,9 +4,7 @@ Android Application
 ### Initialization
 
 1. Import the payablesdk.aar file
-    - File > New > New Module > Import .JAR/.AAR Package
-    - Select your payablesdk.aar file
-    - Click finish
+    - File > New > New Module > Import .JAR/.AAR Package > Select your payablesdk.aar file > Click finish
     - File > Project Structure > app > Dependencies > Add Button > Module dependency > Select payablesdk > Click Ok and Complete
     - Sync the project
 
