@@ -65,7 +65,6 @@ Payable.PAYABLE_APP_NOT_INSTALLED : 888;
 
 * If you want to use it in your class without extending from Payable class
 ```java
-
 public class InsideActivity extends AppCompatActivity implements PayableListener {
 
     EditText edtAmount;
