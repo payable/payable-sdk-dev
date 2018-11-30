@@ -14,15 +14,13 @@ import android.widget.Toast;
 
 public class InsideActivity extends AppCompatActivity implements PayableListener {
 
-    private static final String TAG = "PAYable_Demo";
-    private static final int PAYABLE_REQUEST_CODE = 145;
-
     EditText edtAmount;
     Button btnPay;
     TextView txtResponse;
 
     double saleAmount = 0;
 
+    // 1. Declare Payable Client
     Payable payableClient;
 
     @Override
@@ -34,11 +32,14 @@ public class InsideActivity extends AppCompatActivity implements PayableListener
         btnPay = findViewById(R.id.btnPay);
         txtResponse = findViewById(R.id.txtResponse);
 
+        // 2. Set Payable Client
         payableClient = new Payable();
 
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // 3. Call your method
                 payableSale();
             }
         });
@@ -47,15 +48,22 @@ public class InsideActivity extends AppCompatActivity implements PayableListener
 
     private void payableSale() {
 
+        // 4. Convert sale amount to double from EditText
         saleAmount = Double.parseDouble(edtAmount.getText().toString());
 
+        // 5. Set client id, name and amount to the Payable object
         payableClient.setClientName("NAME");
         payableClient.setClientId("456");
         payableClient.setSaleAmount(saleAmount);
 
         try {
+
+            // 6. Start the activity
             startActivityForResult(payableClient.getPaymentIntent(), Payable.PAYABLE_REQUEST_CODE);
+
         } catch (ActivityNotFoundException ex) {
+
+            // If App is not installed handle here
             Toast.makeText(getApplicationContext(), "PAYABLE_APP_NOT_INSTALLED", Toast.LENGTH_LONG).show();
         }
     }
@@ -63,6 +71,8 @@ public class InsideActivity extends AppCompatActivity implements PayableListener
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        // 7. onActivityResult set the callback listener to handle the response
         if (requestCode == Payable.PAYABLE_REQUEST_CODE) {
             if (payableClient != null) {
                 payableClient.setResponseCallback(data, this);
@@ -70,16 +80,19 @@ public class InsideActivity extends AppCompatActivity implements PayableListener
         }
     }
 
+    // 8. onPaymentSuccess method
     @Override
     public void onPaymentSuccess(Payable payable) {
         updateMyUI(payable);
     }
 
+    // 9. onPaymentFailure method
     @Override
     public void onPaymentFailure(Payable payable) {
         updateMyUI(payable);
     }
 
+    // 10. Update..
     private void updateMyUI(Payable payable) {
 
         String responseText = "statusCode: " + payable.getStatusCode() + "\n";
