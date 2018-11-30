@@ -2,19 +2,20 @@
 Android Application
 
 ### Initialization
-1. Copy this code to your string.xml file in resources directory and change it with your information
 
-```xml
-<string name="payable_client_id">Kangaroo</string>
-<string name="payable_client_name">155636</string>
-```
+1. Import the payablesdk.aar file
+    - File > New > New Module > Import .JAR/.AAR Package
+    - Select your payablesdk.aar file
+    - Click finish
+    - File > Project Structure > app > Dependencies > Add Button > Module dependency > Select payablesdk > Click Ok and Complete
+    - Sync the project
 
 2. Copy Payable.java & PayableListener.java and extend your activity class from Payable.java, makesure Payable.java can access your R.java file in order to access your string.xml
 ```java
 public class MainActivity extends Payable {}
 ```
 
-On click listener call the method 
+On click listener call the method
 ```java
 private void payableSale() {
     // Set your EditText value
