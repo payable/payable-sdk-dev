@@ -17,7 +17,6 @@ public class MainActivity extends Payable {}
 ```
 
 3. On click listener call the method
-
 ```java
 private void payableSale() {
 
@@ -43,7 +42,7 @@ private void payableSale() {
 }
 ```
 
-Return Payable Object
+* Return Payable Object
 ```java
 payable.getStatusCode();
 payable.getSaleAmount();
@@ -56,7 +55,7 @@ payable.getIsEmv();
 payable.getTxnStatus();
 ```
 
-Return Status Codes
+* Return Status Codes
 ```java
 Payable.PAYABLE_REQUEST_CODE : 3569;
 Payable.PAYABLE_STATUS_SUCCESS : 222;
