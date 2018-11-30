@@ -1,4 +1,4 @@
-# PAYable Android Intigration
+# PAYable Android Integration
 Android Application
 
 ### Initialization
