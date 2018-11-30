@@ -10,8 +10,11 @@ Android Application
     - File > Project Structure > app > Dependencies > Add Button > Module dependency > Select payablesdk > Click Ok and Complete
     - Sync the project
 
-2. Copy Payable.java & PayableListener.java and extend your activity class from Payable.java, makesure Payable.java can access your R.java file in order to access your string.xml
+2. import the payablesdk library and extend the class from your activity class
+
 ```java
+import com.payable.sdk.Payable;
+
 public class MainActivity extends Payable {}
 ```
 
@@ -20,6 +23,8 @@ On click listener call the method
 private void payableSale() {
     // Set your EditText value
     saleAmount = Double.parseDouble(edtAmount.getText().toString());
+    setClientId("YOUR_ID");
+    setClientName("YOUR_NAME");
     startPayment(saleAmount, new PayableListener() {
         @Override
         public void onPaymentSuccess(Payable payable) {
