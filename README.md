@@ -20,6 +20,7 @@ public class MainActivity extends Payable {}
 
 ```java
 private void payableSale() {
+
     // Set your EditText value
     saleAmount = Double.parseDouble(edtAmount.getText().toString());
     setClientId("YOUR_ID");
