@@ -17,6 +17,7 @@ public class MainActivity extends Payable {}
 ```
 
 3. On click listener call the method
+
 ```java
 private void payableSale() {
     // Set your EditText value
