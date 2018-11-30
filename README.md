@@ -16,7 +16,7 @@ import com.payable.sdk.Payable;
 public class MainActivity extends Payable {}
 ```
 
-On click listener call the method
+3. On click listener call the method
 ```java
 private void payableSale() {
     // Set your EditText value
