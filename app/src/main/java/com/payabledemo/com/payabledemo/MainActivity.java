@@ -45,8 +45,13 @@ public class MainActivity extends Payable {
 
     private void payableSale() {
 
-
         saleAmount = Double.parseDouble(edtAmount.getText().toString());
+
+        if(saleAmount == 789) {
+            Intent in = new Intent(this, InsideActivity.class);
+            startActivity(in);
+            return;
+        }
 
         setClientId("566");
         setClientName("Daraz");

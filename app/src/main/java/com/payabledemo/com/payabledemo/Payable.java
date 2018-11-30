@@ -1,8 +1,11 @@
 package com.payabledemo.com.payabledemo;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
+
 import java.text.DecimalFormat;
 
 public class Payable extends AppCompatActivity {
@@ -33,10 +36,7 @@ public class Payable extends AppCompatActivity {
 
     PayableListener payableListener;
 
-
     public void Payable() {
-        //setClientId(getString(R.string.payable_client_id));
-        //setClientName(getString(R.string.payable_client_name));
     }
 
     public String getCcLast4() {
@@ -107,7 +107,7 @@ public class Payable extends AppCompatActivity {
         return saleAmount;
     }
 
-    private void setSaleAmount(double saleAmount) {
+    public void setSaleAmount(double saleAmount) {
         this.saleAmount = saleAmount;
     }
 
@@ -129,7 +129,7 @@ public class Payable extends AppCompatActivity {
 
     public void setIntentResponse(Intent data) {
 
-        if(data != null) {
+        if (data != null) {
             this.statusCode = data.getIntExtra("STATUS_CODE", 0);
             this.saleAmount = data.getDoubleExtra("PAY_AMOUNT", 0);
             this.ccLast4 = data.getStringExtra("ccLast4");
@@ -141,6 +141,17 @@ public class Payable extends AppCompatActivity {
             this.txnStatus = data.getIntExtra("txnStatus", 0);
         }
 
+    }
+
+    public Intent getPaymentIntent() {
+
+        Intent i = new Intent("com.payable.CARD_PAY");
+        i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        i.putExtra("PAY_AMOUNT", getSaleAmount());
+        i.putExtra("CLIENT_ID", getClientId());
+        i.putExtra("CLIENT_NAME", getClientName());
+
+        return i;
     }
 
     public void startPayment(double saleAmount, PayableListener payableListenerLocal) {
@@ -175,30 +186,36 @@ public class Payable extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PAYABLE_REQUEST_CODE) {
+            setResponseCallback(data, payableListener);
+        }
 
-            setIntentResponse(data);
+    }
 
-            switch (getStatusCode()) {
-                case PAYABLE_STATUS_SUCCESS:
-                    setStatusCode(PAYABLE_STATUS_SUCCESS);
-                    payableListener.onPaymentSuccess( this);
-                    break;
-                case PAYABLE_STATUS_NOT_LOGIN:
-                    setStatusCode(PAYABLE_STATUS_NOT_LOGIN);
-                    payableListener.onPaymentFailure( this);
-                    break;
-                case PAYABLE_STATUS_FAILED:
-                    setStatusCode(PAYABLE_STATUS_FAILED);
-                    payableListener.onPaymentFailure( this);
-                    break;
-                case PAYABLE_INVALID_AMOUNT:
-                    setStatusCode(PAYABLE_INVALID_AMOUNT);
-                    payableListener.onPaymentFailure( this);
-                    break;
-                default:
-                    break;
-            }
+    public void setResponseCallback(Intent data, PayableListener payableListenerLocal) {
 
+        setIntentResponse(data);
+        this.payableListener = payableListenerLocal;
+
+        switch (getStatusCode()) {
+            case PAYABLE_STATUS_SUCCESS:
+                setStatusCode(PAYABLE_STATUS_SUCCESS);
+                payableListener.onPaymentSuccess(this);
+                break;
+            case PAYABLE_STATUS_NOT_LOGIN:
+                setStatusCode(PAYABLE_STATUS_NOT_LOGIN);
+                payableListener.onPaymentFailure(this);
+                break;
+            case PAYABLE_STATUS_FAILED:
+                setStatusCode(PAYABLE_STATUS_FAILED);
+                payableListener.onPaymentFailure(this);
+                break;
+            case PAYABLE_INVALID_AMOUNT:
+                setStatusCode(PAYABLE_INVALID_AMOUNT);
+                payableListener.onPaymentFailure(this);
+                break;
+            default:
+                break;
         }
     }
+
 }
