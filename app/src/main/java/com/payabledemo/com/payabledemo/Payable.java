@@ -16,7 +16,6 @@ public class Payable extends AppCompatActivity {
     public static final int PAYABLE_INVALID_AMOUNT = 999;
     public static final int PAYABLE_APP_NOT_INSTALLED = 888;
 
-
     // PAYable
     private String ccLast4;
     private int cardType;
