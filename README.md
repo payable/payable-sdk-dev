@@ -1,5 +1,5 @@
 # PAYable Android Integration
-Android Application
+Android Application - https://gitlab.com/payable/PAYable_Android_Inegration_Demo
 
 ### Initialization
 
