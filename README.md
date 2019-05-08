@@ -3,12 +3,12 @@ Android Application - https://gitlab.com/payable/PAYable_Android_Inegration_Demo
 
 ### Initialization
 
-1. Import the payablesdk.aar file
+##### 1. Import the payablesdk.aar file
     - File > New > New Module > Import .JAR/.AAR Package > Select your payablesdk.aar file > Click finish
     - File > Project Structure > app > Dependencies > Add Button > Module dependency > Select payablesdk > Click Ok and Complete
     - Sync the project
 
-2. Extend the class from your activity class
+##### 2. Extend the class from your activity class
 ```java
 import com.payable.sdk.Payable;
 public class MainActivity extends Payable {}
@@ -41,7 +41,7 @@ private void payableSale() {
 }
 ```
 
-* Return Payable Object
+##### * Return Payable Object
 ```java
 payable.getStatusCode();
 payable.getSaleAmount();
@@ -54,7 +54,7 @@ payable.getIsEmv();
 payable.getTxnStatus();
 ```
 
-* Return Status Codes
+##### * Return Status Codes
 ```java
 Payable.PAYABLE_REQUEST_CODE : 3569;
 Payable.PAYABLE_STATUS_SUCCESS : 222;
@@ -64,7 +64,7 @@ Payable.PAYABLE_INVALID_AMOUNT : 999;
 Payable.PAYABLE_APP_NOT_INSTALLED : 888;
 ```
 
-* If you want to use it in your class without extending from Payable class
+##### * If you want to use it in your class without extending from Payable class
 ```java
 public class InsideActivity extends AppCompatActivity implements PayableListener {
 

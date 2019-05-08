@@ -1,12 +1,13 @@
 package com.payabledemo.com.payabledemo;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+//import android.support.v7.app.AppCompatActivity;
 
 import java.text.DecimalFormat;
 
-public class Payable extends AppCompatActivity {
+public class Payable extends Activity {
 
     // Status Codes
     public static final int PAYABLE_REQUEST_CODE = 3569;
@@ -24,6 +25,8 @@ public class Payable extends AppCompatActivity {
     private String mid;
     private int isEmv;
     private int txnStatus;
+    private String receiptSMS;
+    private String receiptEmail;
 
     // Client
     private int statusCode;
@@ -123,6 +126,14 @@ public class Payable extends AppCompatActivity {
         this.clientName = clientName;
     }
 
+    public String getReceiptSMS() { return receiptSMS; }
+
+    private void setReceiptSMS(String receiptSMS) { this.receiptSMS = receiptSMS; }
+
+    public String getReceiptEmail() { return receiptEmail; }
+
+    private void setReceiptEmail(String receiptEmail) { this.receiptEmail = receiptEmail; }
+
     public void setIntentResponse(Intent data) {
 
         if (data != null) {
@@ -135,6 +146,8 @@ public class Payable extends AppCompatActivity {
             this.mid = data.getStringExtra("mid");
             this.isEmv = data.getIntExtra("isEmv", 0);
             this.txnStatus = data.getIntExtra("txnStatus", 0);
+            this.receiptSMS = data.getStringExtra("receiptSMS");
+            this.receiptEmail = data.getStringExtra("receiptEmail");
         }
 
     }
@@ -184,7 +197,6 @@ public class Payable extends AppCompatActivity {
         if (requestCode == PAYABLE_REQUEST_CODE) {
             setResponseCallback(data, payableListener);
         }
-
     }
 
     public void setResponseCallback(Intent data, PayableListener payableListenerLocal) {
@@ -213,5 +225,4 @@ public class Payable extends AppCompatActivity {
                 break;
         }
     }
-
 }
