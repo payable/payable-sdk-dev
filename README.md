@@ -1,20 +1,53 @@
-# PAYable Android Integration
-Android Application - https://gitlab.com/payable/PAYable_Android_Inegration_Demo
+### PAYable SDK - Android Integration
 
-### Initialization
+<img width=200 src="https://i.imgur.com/QCiiqMU.png" /> <br>
 
-##### 1. Import the payablesdk.aar file
-    - File > New > New Module > Import .JAR/.AAR Package > Select your payablesdk.aar file > Click finish
-    - File > Project Structure > app > Dependencies > Add Button > Module dependency > Select payablesdk > Click Ok and Complete
-    - Sync the project
+Android SDK - https://gitlab.com/payable/payable_android_itegration <br/>
+<a target="_blank" href="https://gitlab.com/payable/payable_android_itegration/issues/new">Create Issue / Ask Question</a>
 
-##### 2. Extend the class from your activity class
+[![](https://jitpack.io/v/com.gitlab.aslamanver/payable_sdk_lib.svg)](https://jitpack.io/#com.gitlab.aslamanver/payable_sdk_lib)
+
+<hr>
+
+### Initialization 
+
+* For PAX Terminal, Download <a href="https://gitlab.com/payable/payable_android_itegration/raw/master/PAYable/payable-pax.apk" target="_blank">payable-pax.apk</a> file 
+* For Android Mobile, Download <a href="https://gitlab.com/payable/payable_android_itegration/raw/master/PAYable/payable.apk" target="_blank">payable.apk</a> file
+
+<b>Step 1.</b> Add it in your root build.gradle at the end of repositories:
+```gradle
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+<b>Step 2.</b> Add the dependency in your app level gradle file:
+```gradle
+dependencies {
+        implementation 'com.gitlab.aslamanver:payable_sdk_lib:1.0.1'
+}
+```
+
+> Sync the project before implementation <br>
+ <a target="_blank" href="https://stackoverflow.com/questions/19932793/syncing-android-studio-project-with-gradle-files">How to Sync Android Studio Project</a>
+
+<hr>
+
+### Implementation
+
+<b>Step 1.</b> Extend the class from your activity class
 ```java
 import com.payable.sdk.Payable;
+import com.payable.sdk.PayableListener;
+
 public class MainActivity extends Payable {}
 ```
 
 * On click listener call the method
+
 ```java
 private void payableSale() {
 
@@ -52,6 +85,8 @@ payable.getTerminalId();
 payable.getMid();
 payable.getIsEmv();
 payable.getTxnStatus();
+payable.getReceiptSMS();
+payable.getReceiptEmail();
 ```
 
 ##### * Return Status Codes
@@ -158,6 +193,8 @@ public class InsideActivity extends AppCompatActivity implements PayableListener
         responseText += "mid: " + payable.getMid() + "\n";
         responseText += "isEmv: " + payable.getIsEmv() + "\n";
         responseText += "txnStatus: " + payable.getTxnStatus() + "\n";
+        responseText += "receiptSMS: " + payable.getReceiptSMS() + "\n";
+        responseText += "receiptEmail: " + payable.getReceiptEmail() + "\n";
 
         txtResponse.setText(responseText);
 
@@ -165,7 +202,4 @@ public class InsideActivity extends AppCompatActivity implements PayableListener
 }
 ```
 
-
-
-
-
+PAYable SDK Android Integration
