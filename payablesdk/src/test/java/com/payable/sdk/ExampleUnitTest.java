@@ -1,4 +1,4 @@
-package com.payabledemo.com.payabledemo;
+package com.payable.sdk;
 
 import org.junit.Test;
 

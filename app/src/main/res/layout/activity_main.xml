@@ -4,47 +4,94 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
-    <LinearLayout
-        android:padding="30dp"
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <EditText
-            android:inputType="numberDecimal"
-            android:id="@+id/edtAmount"
-            android:hint="Amount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/btnPay"
-            android:layout_marginTop="20dp"
-            android:text="PAYable"
-            android:textAllCaps="false"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#0D47A1"
-            android:textColor="#fff"
-            android:paddingLeft="20dp"
-            android:drawablePadding="-20dp"
-            android:drawableLeft="@drawable/ic_credit_card_black_24dp"/>
+            android:orientation="vertical"
+            android:padding="30dp">
 
-        <TextView
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"
-            android:hint="Response"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:paddingBottom="10dp"
+                android:src="@drawable/logo" />
 
-        <TextView
-            android:id="@+id/txtResponse"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/actTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:text="Extended Activity" />
 
-    </LinearLayout>
 
+            <EditText
+                android:id="@+id/edtAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Amount"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal" />
+
+            <Button
+                android:id="@+id/btnPay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#0D47A1"
+                android:drawableLeft="@drawable/ic_credit_card_black_24dp"
+                android:drawablePadding="-20dp"
+                android:paddingLeft="20dp"
+                android:text="Pay"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+
+            <Button
+                android:id="@+id/btnPayCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#0D47A1"
+                android:drawableLeft="@drawable/ic_credit_card_black_24dp"
+                android:drawablePadding="-20dp"
+                android:paddingLeft="20dp"
+                android:text="Charge Card"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+
+            <Button
+                android:id="@+id/btnPayWallet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#0D47A1"
+                android:drawableLeft="@drawable/ic_credit_card_black_24dp"
+                android:drawablePadding="-20dp"
+                android:paddingLeft="20dp"
+                android:text="Charge Wallet"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:hint="Response"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtResponse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+    </ScrollView>
 
 </RelativeLayout>
