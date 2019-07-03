@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "64938184534",
+    "firebase_url": "https://ecr-payable.firebaseio.com",
+    "project_id": "ecr-payable",
+    "storage_bucket": "ecr-payable.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:64938184534:android:51e8bb090bdfecde",
+        "android_client_info": {
+          "package_name": "com.payable.demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "64938184534-k505dpmmn6liigqb53ffjog0cs1dgoh3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGGPqsOAy9g5D8r-GfTJPAf_3-9jNG9nM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "64938184534-k505dpmmn6liigqb53ffjog0cs1dgoh3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

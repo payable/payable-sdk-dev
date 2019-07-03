@@ -72,6 +72,10 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
             }
         });
 
+        if (getIntent().getIntExtra("payment_type", 0) > -1) {
+            payableClient.startPayment(getIntent().getDoubleExtra("AMOUNT", 0), getIntent().getIntExtra("PAYMENT_TYPE", Payable.METHOD_ANY), this);
+        }
+
     }
 
     private void payableSale(int paymentMethod) {
