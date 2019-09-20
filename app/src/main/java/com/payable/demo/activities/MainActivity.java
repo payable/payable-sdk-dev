@@ -2,24 +2,14 @@ package com.payable.demo.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.payable.demo.R;
 import com.payable.sdk.Payable;
 import com.payable.sdk.PayableListener;
@@ -80,24 +70,6 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
                 payableSale(Payable.METHOD_ANY);
             }
         });
-
-        /*if (getIntent().getIntExtra("payment_type", 0) > -1) {
-            payableClient.startPayment(getIntent().getDoubleExtra("AMOUNT", 0), getIntent().getIntExtra("PAYMENT_TYPE", Payable.METHOD_ANY), this);
-        }*/
-
-        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-            @Override
-            public void onSuccess(InstanceIdResult instanceIdResult) {
-                Log.d("FCM", "Retrieve token successful : " + instanceIdResult.getToken());
-            }
-        });
-
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-        window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-        window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-
-        RingtoneManager.getRingtone(getApplicationContext(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)).play();
     }
 
     private void payableSale(int paymentMethod) {
@@ -110,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // 7. onActivityResult set the callback listener to handle the response
