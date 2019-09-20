@@ -23,8 +23,6 @@ public class Payable {
     public static final int TXN_MANUAL = 2;
     public static final int TXN_NFC = 3;
 
-    public static final String TX_RECEIVER = "com.payable.TX_RECEIVER";
-
     private Activity activity;
     private static Payable payable;
     private PayableSale clientSale;
@@ -51,7 +49,7 @@ public class Payable {
         clientSale.setClientName(name);
     }
 
-    private static PayableSale setIntentResponse(Intent data, PayableSale clientSale) {
+    private void setIntentResponse(Intent data) {
 
         if (data != null) {
             clientSale.setStatusCode(data.getIntExtra("STATUS_CODE", 0));
@@ -64,18 +62,11 @@ public class Payable {
             clientSale.setMid(data.getStringExtra("mid"));
             clientSale.setTxnType(data.getIntExtra("txnType", -1));
             clientSale.setTxnStatus(data.getIntExtra("txnStatus", 0));
-            clientSale.setOut_trade_no(data.getStringExtra("out_trade_no"));
             clientSale.setReceiptSMS(data.getStringExtra("receiptSMS"));
             clientSale.setReceiptEmail(data.getStringExtra("receiptEmail"));
             clientSale.setMessage(data.getStringExtra("message"));
-            clientSale.setJsonData(data.getStringExtra("JSON_DATA"));
         }
 
-        return clientSale;
-    }
-
-    public static PayableSale getIntentSale(Intent data) {
-        return setIntentResponse(data, new PayableSale());
     }
 
     private Intent getPaymentIntent() {
@@ -87,11 +78,10 @@ public class Payable {
         i.putExtra("CLIENT_ID", clientSale.getClientId());
         i.putExtra("CLIENT_NAME", clientSale.getClientName());
         i.putExtra("CLIENT_API_KEY", clientSale.getApiKey());
-        i.putExtra("JSON_DATA", clientSale.getJsonData());
         return i;
     }
 
-    public void startPayment(double saleAmount, int paymentMethod, String jsonData, PayableListener payableListenerLocal) {
+    public void startPayment(double saleAmount, int paymentMethod, PayableListener payableListenerLocal) {
 
         waitDialog = waitDialog == null ? new WaitDialog() : waitDialog;
         waitDialog.showDialog(activity);
@@ -100,7 +90,6 @@ public class Payable {
 
         clientSale.setSaleAmount(saleAmount);
         clientSale.setPaymentMethod(paymentMethod);
-        clientSale.setJsonData(jsonData);
 
         if (payable.payableListener.onPaymentStart(payable.clientSale)) {
 
@@ -108,7 +97,7 @@ public class Payable {
 
                 try {
                     payable.activity.startActivityForResult(getPaymentIntent(), REQUEST_CODE);
-                    payable.activity.overridePendingTransition(R.anim.enter, R.anim.exit);
+
                 } catch (ActivityNotFoundException ex) {
                     clientSale.setStatusCode(APP_NOT_INSTALLED);
                     payableListener.onPaymentFailure(clientSale);
@@ -124,7 +113,7 @@ public class Payable {
 
     private void setResponseCallback(Intent data, PayableListener payableListenerLocal) {
 
-        setIntentResponse(data, clientSale);
+        setIntentResponse(data);
         this.payableListener = payableListenerLocal;
 
         switch (clientSale.getStatusCode()) {

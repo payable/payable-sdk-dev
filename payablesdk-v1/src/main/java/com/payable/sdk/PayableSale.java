@@ -1,7 +1,5 @@
 package com.payable.sdk;
 
-import com.google.gson.Gson;
-
 public class PayableSale {
 
     // PAYable
@@ -12,7 +10,6 @@ public class PayableSale {
     private String mid;
     private int txtType;
     private int txnStatus;
-    private String out_trade_no;
     private String receiptSMS;
     private String receiptEmail;
 
@@ -24,7 +21,6 @@ public class PayableSale {
     private int paymentMethod;
     private String apiKey;
     private String message;
-    private String jsonData;
 
     public String getCcLast4() {
         return ccLast4;
@@ -154,32 +150,11 @@ public class PayableSale {
         this.message = message;
     }
 
-    public String getJsonData() {
-        return jsonData;
-    }
-
-    public void setJsonData(String jsonData) {
-        this.jsonData = jsonData;
-    }
-
     public String getTxnTypeName() {
         if (txtType == Payable.TXN_EMV) return "EMV";
         if (txtType == Payable.TXN_SWIPE) return "SWIPE";
         if (txtType == Payable.TXN_NFC) return "NFC";
         if (txtType == Payable.TXN_MANUAL) return "MANUAL";
         return "SWIPE";
-    }
-
-    @Override
-    public String toString() {
-        return new Gson().toJson(this);
-    }
-
-    public String getOut_trade_no() {
-        return out_trade_no;
-    }
-
-    public void setOut_trade_no(String out_trade_no) {
-        this.out_trade_no = out_trade_no;
     }
 }
