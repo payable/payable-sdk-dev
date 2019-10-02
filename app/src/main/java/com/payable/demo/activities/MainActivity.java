@@ -78,7 +78,8 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         saleAmount = Double.parseDouble(edtAmount.getText().toString());
 
         // 5. start the payment request to PAYable app with the callback listener { "ORDER_TRACKING" : "123455" }
-        payableClient.startPayment(saleAmount, paymentMethod, "{ \"ORDER_TRACKING\" : \"123455\" }", this);
+        // payableClient.startPayment(saleAmount, paymentMethod, "{ \"ORDER_TRACKING\" : \"123455\" }", this);
+        payableClient.startPayment(saleAmount, paymentMethod, this);
     }
 
     @Override
