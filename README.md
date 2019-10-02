@@ -5,7 +5,7 @@
 Android SDK - https://github.com/payable/payable-sdk-dev <br/>
 <a target="_blank" href="https://github.com/payable/payable-sdk-dev/issues/new">Create Issue</a>
 
-[![](https://jitpack.io/v/com.gitlab.aslamanver/payable_sdk_lib.svg)](https://jitpack.io/#com.gitlab.aslamanver/payable_sdk_lib)
+[![](https://jitpack.io/v/payable/payable-sdk-dev.svg)](https://jitpack.io/#payable/payable-sdk-dev)
 
 <hr>
 
