@@ -12,7 +12,7 @@ Android SDK - https://github.com/payable/payable-sdk-dev <br/>
 ### Initialization 
 
 * For PAX Terminal, Download <a href="https://gitlab.com/payable/payable_android_itegration/raw/master/PAYable/payable-pax.apk" target="_blank">payable-pax.apk</a> file 
-* For Android Mobile, Download <a href="https://gitlab.com/payable/payable_android_itegration/raw/master/PAYable/payable.apk" target="_blank">payable.apk</a> file
+* For Android Mobile, Download <a href="https://github.com/payable/payable-sdk-dev/raw/master/PAYable_APK/PAYable.apk" target="_blank">PAYable.apk</a> file
 
 <b>Step 1.</b> Add it in your root build.gradle at the end of repositories:
 ```gradle
