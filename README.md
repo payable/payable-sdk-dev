@@ -2,8 +2,8 @@
 
 <img width=200 src="https://i.imgur.com/QCiiqMU.png" /> <br>
 
-Android SDK - https://gitlab.com/payable/payable_android_itegration <br/>
-<a target="_blank" href="https://gitlab.com/payable/payable_android_itegration/issues/new">Create Issue / Ask Question</a>
+Android SDK - https://github.com/payable/payable-sdk-dev <br/>
+<a target="_blank" href="https://github.com/payable/payable-sdk-dev/issues/new">Create Issue</a>
 
 [![](https://jitpack.io/v/com.gitlab.aslamanver/payable_sdk_lib.svg)](https://jitpack.io/#com.gitlab.aslamanver/payable_sdk_lib)
 
@@ -27,7 +27,7 @@ allprojects {
 <b>Step 2.</b> Add the dependency in your app level gradle file:
 ```gradle
 dependencies {
-        implementation 'com.gitlab.aslamanver:payable_sdk_lib:1.0.1'
+        implementation 'com.github.payable:payable-sdk-dev:2.0.0'
 }
 ```
 
