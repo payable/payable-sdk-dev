@@ -27,7 +27,7 @@ allprojects {
 <b>Step 2.</b> Add the dependency in your app level gradle file:
 ```gradle
 dependencies {
-        implementation 'com.github.payable:payable-sdk-dev:2.0.0'
+    implementation 'com.github.payable:payable-sdk-dev:2.0.0'
 }
 ```
 
