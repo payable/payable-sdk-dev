@@ -38,40 +38,94 @@ dependencies {
 
 ### Implementation
 
-<b>Step 1.</b> Extend the class from your activity class
+<b>1.</b> Import PAYable SDK package.
+
 ```java
 import com.payable.sdk.Payable;
 import com.payable.sdk.PayableListener;
-
-public class MainActivity extends Payable {}
 ```
 
-* On click listener call the method
+<b>2.</b> Implement `PayableListener` and declare PAYable client in your class.
 
 ```java
-private void payableSale() {
-
-    // Set your EditText value
-    saleAmount = Double.parseDouble(edtAmount.getText().toString());
-    setClientId("YOUR_ID");
-    setClientName("YOUR_NAME");
+public class MainActivity extends AppCompatActivity implements PayableListener {
     
-    startPayment(saleAmount, new PayableListener() {
-        @Override
-        public void onPaymentSuccess(Payable payable) {
-            updateMyUI(payable);
-        }
-        @Override
-        public void onPaymentFailure(Payable payable) {
-            if(payable.getStatusCode() == PAYABLE_APP_NOT_INSTALLED) {
-                Toast.makeText(getApplicationContext(), "PAYABLE_APP_NOT_INSTALLED", Toast.LENGTH_LONG).show();
-            }
-            else {
-                //updateMyUI(payable);
-            }
-        }
-    });
+    Payable payableClient;
+    
+    @Override
+    boolean onPaymentStart(PayableSale payableSale){
+        return true;
+    }
+    
+    @Override
+    void onPaymentSuccess(PayableSale payableSale){
+        
+    }
+    
+    @Override
+    void onPaymentFailure(PayableSale payableSale){
+        
+    }
 }
+```
+
+<b>3.</b> Create PAYable client with 
+
+```java 
+Payable.createPayableClient(activity: Activity, client_id: String, client_name: String, api_key: String);
+```
+
+> It should be declared inside `onCreate` method like below.
+
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    ...
+    payableClient = Payable.createPayableClient(this, "1452", "FOOD_COURT", "C6DFA0B215B2CF24EF04794F718A3FC8");
+}
+```
+
+<b>4.</b> Override `onActivityResult` method and set the callback listener to handle the response.
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    ...
+    payableClient.handleResponse(requestCode, data);
+
+}
+```
+
+<b>5.</b> On click listener call the method to start payment.
+
+```java 
+payableClient.startPayment(sale_amount: Double, payment_method: Integer, payable_listener: PayableListener);
+```
+
+If you want to track the sale or need to pass custom data and receive it on payment completion, use this method.
+
+```java 
+payableClient.startPayment(sale_amount: Double, payment_method: Integer, json_data: String, payable_listener: PayableListener);
+```
+
+* Payment methods
+
+```java
+Payable.METHOD_ANY
+Payable.METHOD_CARD
+Payable.METHOD_WALLET
+```
+
+Example:
+
+```java
+payableClient.startPayment(500.50, Payable.METHOD_ANY, this);
+```
+
+* For the order tracking you need to pass the tracking number in json data as below.
+
+```java
+payableClient.startPayment(500.50, Payable.METHOD_ANY, "{ \"ORDER_TRACKING\" : \"123455\" }", this);
 ```
 
 ##### * Return Payable Object
@@ -99,13 +153,13 @@ Payable.PAYABLE_INVALID_AMOUNT : 999;
 Payable.PAYABLE_APP_NOT_INSTALLED : 888;
 ```
 
-##### * If you want to use it in your class without extending from Payable class
+##### * Example Activity
 ```java
-public class InsideActivity extends AppCompatActivity implements PayableListener {
+public class MainActivity extends AppCompatActivity implements PayableListener {
 
     EditText edtAmount;
-    Button btnPay;
-    TextView txtResponse;
+    Button btnPayCard, btnPayWallet, btnPay;
+    TextView txtResponse, actTitle;
 
     double saleAmount = 0;
 
@@ -118,86 +172,100 @@ public class InsideActivity extends AppCompatActivity implements PayableListener
         setContentView(R.layout.activity_main);
 
         edtAmount = findViewById(R.id.edtAmount);
+        btnPayCard = findViewById(R.id.btnPayCard);
+        btnPayWallet = findViewById(R.id.btnPayWallet);
         btnPay = findViewById(R.id.btnPay);
         txtResponse = findViewById(R.id.txtResponse);
+        actTitle = findViewById(R.id.actTitle);
+        actTitle.setText("Main Activity");
 
         // 2. Set Payable Client
-        payableClient = new Payable();
+        payableClient = Payable.createPayableClient(this, "1452", "FOOD_COURT", "C6DFA0B215B2CF24EF04794F718A3FC8");
+
+        btnPayCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                hideSoftKeyboard(edtAmount);
+
+                // 3. Call your method
+                payableSale(Payable.METHOD_CARD);
+            }
+        });
+
+        btnPayWallet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                hideSoftKeyboard(edtAmount);
+
+                // 3. Call your method
+                payableSale(Payable.METHOD_WALLET);
+            }
+        });
 
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // 3. Call your method
-                payableSale();
+                payableSale(Payable.METHOD_ANY);
             }
         });
-
     }
 
-    private void payableSale() {
+    private void payableSale(int paymentMethod) {
 
         // 4. Convert sale amount to double from EditText
         saleAmount = Double.parseDouble(edtAmount.getText().toString());
 
-        // 5. Set client id, name and amount to the Payable object
-        payableClient.setClientName("NAME");
-        payableClient.setClientId("456");
-        payableClient.setSaleAmount(saleAmount);
-
-        try {
-
-            // 6. Start the activity
-            startActivityForResult(payableClient.getPaymentIntent(), Payable.PAYABLE_REQUEST_CODE);
-
-        } catch (ActivityNotFoundException ex) {
-
-            // If App is not installed handle here
-            Toast.makeText(getApplicationContext(), "PAYABLE_APP_NOT_INSTALLED", Toast.LENGTH_LONG).show();
-        }
+        // 5. start the payment request to PAYable app with the callback listener { "ORDER_TRACKING" : "123455" }
+        // payableClient.startPayment(saleAmount, paymentMethod,  json\" : \"123455\" }", this);
+        payableClient.startPayment(saleAmount, paymentMethod, this);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // 7. onActivityResult set the callback listener to handle the response
-        if (requestCode == Payable.PAYABLE_REQUEST_CODE) {
-            if (payableClient != null) {
-                payableClient.setResponseCallback(data, this);
-            }
-        }
+        payableClient.handleResponse(requestCode, data);
     }
 
     // 8. onPaymentSuccess method
     @Override
-    public void onPaymentSuccess(Payable payable) {
-        updateMyUI(payable);
+    public boolean onPaymentStart(PayableSale payableSale) {
+        return true;
+    }
+
+    // 8. onPaymentSuccess method
+    @Override
+    public void onPaymentSuccess(PayableSale payableSale) {
+        updateMyUI(payableSale);
     }
 
     // 9. onPaymentFailure method
     @Override
-    public void onPaymentFailure(Payable payable) {
-        updateMyUI(payable);
+    public void onPaymentFailure(PayableSale payableSale) {
+        updateMyUI(payableSale);
     }
 
     // 10. Update..
-    private void updateMyUI(Payable payable) {
+    private void updateMyUI(PayableSale payableSale) {
 
-        String responseText = "statusCode: " + payable.getStatusCode() + "\n";
-        responseText += "responseAmount: " + payable.getSaleAmount() + "\n";
-        responseText += "ccLast4: " + payable.getCcLast4() + "\n";
-        responseText += "cardType: " + payable.getCardType() + "\n";
-        responseText += "txId: " + payable.getTxId() + "\n";
-        responseText += "terminalId: " + payable.getTerminalId() + "\n";
-        responseText += "mid: " + payable.getMid() + "\n";
-        responseText += "isEmv: " + payable.getIsEmv() + "\n";
-        responseText += "txnStatus: " + payable.getTxnStatus() + "\n";
-        responseText += "receiptSMS: " + payable.getReceiptSMS() + "\n";
-        responseText += "receiptEmail: " + payable.getReceiptEmail() + "\n";
+        String responseText = "statusCode: " + payableSale.getStatusCode() + "\n";
+        responseText += "responseAmount: " + payableSale.getSaleAmount() + "\n";
+        responseText += "ccLast4: " + payableSale.getCcLast4() + "\n";
+        responseText += "cardType: " + payableSale.getCardType() + "\n";
+        responseText += "txId: " + payableSale.getTxId() + "\n";
+        responseText += "terminalId: " + payableSale.getTerminalId() + "\n";
+        responseText += "mid: " + payableSale.getMid() + "\n";
+        responseText += "txnType: " + payableSale.getTxnType() + "\n";
+        responseText += "txnStatus: " + payableSale.getTxnStatus() + "\n";
+        responseText += "receiptSMS: " + payableSale.getReceiptSMS() + "\n";
+        responseText += "receiptEmail: " + payableSale.getReceiptEmail() + "\n";
+        responseText += "paymentMethod: " + payableSale.getPaymentMethod() + "\n";
+        responseText += "message: " + payableSale.getMessage() + "\n";
 
         txtResponse.setText(responseText);
-
     }
 }
 ```
