@@ -11,7 +11,7 @@ Android SDK - https://github.com/payable/payable-sdk-dev <br/>
 
 ### Initialization 
 
-* **Sandbox** PAYable APP - Testing purpose <a href="https://github.com/payable/payable-sdk-dev/raw/master/PAYable_APK/PAYable-Sandbox-v0.7.5.apk" target="_blank">PAYable-Sandbox-v0.7.5.apk</a> 
+* Download and install **Sandbox** PAYable APP - Testing purpose <a href="https://github.com/payable/payable-sdk-dev/raw/master/PAYable_APK/PAYable-Sandbox-v0.7.5.apk" target="_blank">PAYable-Sandbox-v0.7.5.apk</a> 
 
 <b>Step 1.</b> Add it in your root build.gradle at the end of repositories:
 ```gradle
