@@ -1,6 +1,6 @@
 ### PAYable SDK - Android Integration
 
-<img width=200 src="https://i.imgur.com/QCiiqMU.png" /> <br>
+![](https://i.imgur.com/ERpCDa7.png)
 
 Android SDK - https://payable.github.io/payable-sdk-dev <br/>
 <a target="_blank" href="https://github.com/payable/payable-sdk-dev/issues/new">Create Issue</a>
