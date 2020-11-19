@@ -1,8 +1,8 @@
 ### PAYable SDK - Android Integration
 
-<img width=200 src="https://i.imgur.com/QCiiqMU.png" /> <br>
+![](https://i.imgur.com/ERpCDa7.png)
 
-Android SDK - https://github.com/payable/payable-sdk-dev <br/>
+Android SDK - https://payable.github.io/payable-sdk-dev <br/>
 <a target="_blank" href="https://github.com/payable/payable-sdk-dev/issues/new">Create Issue</a>
 
 [![](https://jitpack.io/v/payable/payable-sdk-dev.svg)](https://jitpack.io/#payable/payable-sdk-dev) [![](https://gitlab.com/payable-team/payable-sdk/badges/master/pipeline.svg)](https://gitlab.com/payable-team/payable-sdk/pipelines)
