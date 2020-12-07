@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.payable.demo.R;
 import com.payable.sdk.Payable;
 import com.payable.sdk.PayableListener;
+import com.payable.sdk.PayableProgressListener;
 import com.payable.sdk.PayableSale;
 
 public class MainActivity extends AppCompatActivity implements PayableListener {
@@ -70,6 +72,25 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
                 payableSale(Payable.METHOD_ANY);
             }
         });
+
+        payableClient.registerProgressListener(new PayableProgressListener() {
+
+            @Override
+            public void onCardInteraction(int action) {
+                Log.e("TEST_IMPL", "onCardInteraction: " + action);
+            }
+
+            @Override
+            public void onPaymentAccepted(PayableSale payableSale) {
+                Log.e("TEST_IMPL", "onPaymentAccepted: " + payableSale.toString());
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        payableClient.unregisterProgressListener();
     }
 
     private void payableSale(int paymentMethod) {

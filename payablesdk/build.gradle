@@ -1,8 +1,18 @@
+apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'com.android.library'
+
+publish {
+    userOrg = 'payable'
+    repoName = 'android'
+    groupId = 'com.payable'
+    artifactId = 'pay'
+    publishVersion = '1.0.1'
+    desc = 'PAYable Android SDK'
+    website = 'https://android-sdk.payable.lk'
+}
 
 android {
     compileSdkVersion 28
-
 
     defaultConfig {
         minSdkVersion 15
@@ -11,7 +21,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {

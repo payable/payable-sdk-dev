@@ -5,7 +5,10 @@
 Android SDK - https://payable.github.io/payable-sdk-dev <br/>
 <a target="_blank" href="https://github.com/payable/payable-sdk-dev/issues/new">Create Issue</a>
 
-[![](https://jitpack.io/v/payable/payable-sdk-dev.svg)](https://jitpack.io/#payable/payable-sdk-dev) [![](https://gitlab.com/payable-team/payable-sdk/badges/master/pipeline.svg)](https://gitlab.com/payable-team/payable-sdk/pipelines)
+[![](https://jitpack.io/v/payable/payable-sdk-dev.svg)](https://jitpack.io/#payable/payable-sdk-dev) 
+[![](https://gitlab.com/payable-team/payable-sdk/badges/master/pipeline.svg)](https://gitlab.com/payable-team/payable-sdk/pipelines) 
+[ ![Download](https://api.bintray.com/packages/payable/android/pay/images/download.svg?version=1.0.1) ](https://bintray.com/payable/android/pay/1.0.1/link)
+[![Build Status](https://travis-ci.com/payable/payable-sdk-dev.svg?branch=master)](https://travis-ci.com/payable/payable-sdk-dev)
 
 <hr>
 

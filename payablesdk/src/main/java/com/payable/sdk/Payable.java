@@ -2,7 +2,11 @@ package com.payable.sdk;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.widget.Toast;
 
 public class Payable {
 
@@ -23,7 +27,7 @@ public class Payable {
     public static final int TXN_MANUAL = 2;
     public static final int TXN_NFC = 3;
 
-    public static final String TX_RECEIVER = "com.payable.TX_RECEIVER";
+    public static final String TX_RECEIVER = "payable.intent.action.TX_RECEIVER";
 
     private Activity activity;
     private static Payable payable;
@@ -163,5 +167,34 @@ public class Payable {
                 payable.setResponseCallback(data, payable.payableListener);
             }
         }
+    }
+
+    /********************************************************************/
+    PayableProgressListener progressListener;
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.hasExtra("onCardInteraction")) {
+                if (progressListener != null) {
+                    int interaction = intent.getIntExtra("onCardInteraction", -1);
+                    progressListener.onCardInteraction(interaction);
+                }
+            } else if (intent.hasExtra("onPaymentAccepted")) {
+                if (progressListener != null) {
+                    PayableSale sale = setIntentResponse(intent, clientSale);
+                    progressListener.onPaymentAccepted(sale);
+                }
+            }
+        }
+    };
+
+    public void registerProgressListener(PayableProgressListener progressListener) {
+        this.progressListener = progressListener;
+        IntentFilter intentFilter = new IntentFilter(Payable.TX_RECEIVER + "_" + clientSale.getClientId());
+        activity.registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    public void unregisterProgressListener() {
+        activity.unregisterReceiver(broadcastReceiver);
     }
 }
