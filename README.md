@@ -2,8 +2,7 @@
 
 ![](https://i.imgur.com/ERpCDa7.png)
 
-Android SDK - https://payable.github.io/payable-sdk-dev <br/>
-<a target="_blank" href="https://github.com/payable/payable-sdk-dev/issues/new">Create Issue</a>
+Android SDK - https://payable.github.io/payable-sdk-dev | [Create Issue](https://github.com/payable/payable-sdk-dev/issues/new)
 
 [![Build Status](https://travis-ci.com/payable/payable-sdk-dev.svg?branch=master)](https://travis-ci.com/payable/payable-sdk-dev)
 [ ![Download](https://api.bintray.com/packages/payable/android/pay/images/download.svg?version=1.0.1) ](https://bintray.com/payable/android/pay/1.0.1/link)
