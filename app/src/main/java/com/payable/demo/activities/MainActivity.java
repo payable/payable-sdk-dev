@@ -76,13 +76,18 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         payableClient.registerProgressListener(new PayableProgressListener() {
 
             @Override
-            public void onCardInteraction(int action) {
-                Log.e("TEST_IMPL", "onCardInteraction: " + action);
+            public void onCardInteraction(int action, PayableSale payableSale) {
+                Log.e("TEST_IMPL", "onCardInteraction: " + action + " => " + payableSale.toString());
             }
 
             @Override
             public void onPaymentAccepted(PayableSale payableSale) {
                 Log.e("TEST_IMPL", "onPaymentAccepted: " + payableSale.toString());
+            }
+
+            @Override
+            public void onPaymentRejected(PayableSale payableSale) {
+                Log.e("TEST_IMPL", "onPaymentRejected: " + payableSale.toString());
             }
         });
     }

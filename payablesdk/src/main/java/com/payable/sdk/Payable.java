@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Payable {
 
     // Status Codes
@@ -34,6 +37,30 @@ public class Payable {
     private PayableSale clientSale;
     private PayableListener payableListener;
     private WaitDialog waitDialog;
+
+    List<PayableProgressListener> progressListeners = new ArrayList<>();
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.hasExtra("onCardInteraction")) {
+                int interaction = intent.getIntExtra("onCardInteraction", -1);
+                PayableSale sale = setIntentResponse(intent, clientSale);
+                for (PayableProgressListener progressListener : progressListeners) {
+                    progressListener.onCardInteraction(interaction, sale);
+                }
+            } else if (intent.hasExtra("onPaymentAccepted")) {
+                PayableSale sale = setIntentResponse(intent, clientSale);
+                for (PayableProgressListener progressListener : progressListeners) {
+                    progressListener.onPaymentAccepted(sale);
+                }
+            } else if (intent.hasExtra("onPaymentRejected")) {
+                PayableSale sale = setIntentResponse(intent, clientSale);
+                for (PayableProgressListener progressListener : progressListeners) {
+                    progressListener.onPaymentRejected(sale);
+                }
+            }
+        }
+    };
 
     protected Payable() {
         clientSale = new PayableSale();
@@ -169,32 +196,20 @@ public class Payable {
         }
     }
 
-    /********************************************************************/
-    PayableProgressListener progressListener;
-    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra("onCardInteraction")) {
-                if (progressListener != null) {
-                    int interaction = intent.getIntExtra("onCardInteraction", -1);
-                    progressListener.onCardInteraction(interaction);
-                }
-            } else if (intent.hasExtra("onPaymentAccepted")) {
-                if (progressListener != null) {
-                    PayableSale sale = setIntentResponse(intent, clientSale);
-                    progressListener.onPaymentAccepted(sale);
-                }
-            }
-        }
-    };
-
     public void registerProgressListener(PayableProgressListener progressListener) {
-        this.progressListener = progressListener;
-        IntentFilter intentFilter = new IntentFilter(Payable.TX_RECEIVER + "_" + clientSale.getClientId());
-        activity.registerReceiver(broadcastReceiver, intentFilter);
+        progressListeners.add(progressListener);
+        if (progressListeners.size() == 1) {
+            IntentFilter intentFilter = new IntentFilter(Payable.TX_RECEIVER + "_" + clientSale.getClientId());
+            activity.registerReceiver(broadcastReceiver, intentFilter);
+        }
     }
 
     public void unregisterProgressListener() {
-        activity.unregisterReceiver(broadcastReceiver);
+        progressListeners.clear();
+        try {
+            activity.unregisterReceiver(broadcastReceiver);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+        }
     }
 }

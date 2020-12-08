@@ -5,10 +5,9 @@
 Android SDK - https://payable.github.io/payable-sdk-dev <br/>
 <a target="_blank" href="https://github.com/payable/payable-sdk-dev/issues/new">Create Issue</a>
 
-[![](https://jitpack.io/v/payable/payable-sdk-dev.svg)](https://jitpack.io/#payable/payable-sdk-dev) 
-[![](https://gitlab.com/payable-team/payable-sdk/badges/master/pipeline.svg)](https://gitlab.com/payable-team/payable-sdk/pipelines) 
-[ ![Download](https://api.bintray.com/packages/payable/android/pay/images/download.svg?version=1.0.1) ](https://bintray.com/payable/android/pay/1.0.1/link)
 [![Build Status](https://travis-ci.com/payable/payable-sdk-dev.svg?branch=master)](https://travis-ci.com/payable/payable-sdk-dev)
+[ ![Download](https://api.bintray.com/packages/payable/android/pay/images/download.svg?version=1.0.1) ](https://bintray.com/payable/android/pay/1.0.1/link)
+[![](https://jitpack.io/v/payable/payable-sdk-dev.svg)](https://jitpack.io/#payable/payable-sdk-dev) 
 
 <hr>
 
@@ -16,25 +15,15 @@ Android SDK - https://payable.github.io/payable-sdk-dev <br/>
 
 * Request and install **Sandbox** PAYable APP - Testing purpose
 
-<b>Step 1.</b> Add it in your root build.gradle at the end of repositories:
-```gradle
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-
-<b>Step 2.</b> Add the dependency in your app level gradle file:
+<b>Step 1.</b> Add the dependency in your app level gradle file:
 ```gradle
 dependencies {
-    implementation 'com.github.payable:payable-sdk-dev:2.0.3'
+    implementation 'com.payable:pay:2.0.4'
 }
 ```
 
-> Sync the project before implementation <br>
- <a target="_blank" href="https://stackoverflow.com/questions/19932793/syncing-android-studio-project-with-gradle-files">How to Sync Android Studio Project</a>
+> This module is deprecated, implement the above latest and remove this from your `build.gradle` if there is already. <br/>
+> <b>Deprecated</b> : `implementation 'com.github.payable:payable-sdk-dev:2.0.3'`
 
 <hr>
 
