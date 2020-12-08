@@ -22,7 +22,7 @@ dependencies {
 }
 ```
 
-> <b>Deprecated</b> : `implementation 'com.github.payable:payable-sdk-dev'`. The module is deprecated and we recommend to implement our latest `com.payable:pay` module and remove the deprecated implementation from your `build.gradle` if there is already.
+> <b>Deprecated</b> : The `implementation 'com.github.payable:payable-sdk-dev'` module is deprecated and we recommend to implement our latest `com.payable:pay` module and remove the deprecated implementation from your `build.gradle` if there is already.
 
 <hr>
 
