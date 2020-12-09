@@ -213,7 +213,9 @@ protected void onDestroy() {
 }
 ```
 
-##### * Example Activity
+<hr/>
+
+### * Example Activity
 
 ```java
 public class MainActivity extends AppCompatActivity implements PayableListener {
