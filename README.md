@@ -118,6 +118,7 @@ payableClient.startPayment(500.50, Payable.METHOD_ANY, "{ \"ORDER_TRACKING\" : \
 ```
 
 ##### * Return Payable Object
+
 ```java
 payable.getStatusCode();
 payable.getSaleAmount();
@@ -133,6 +134,7 @@ payable.getReceiptEmail();
 ```
 
 ##### * Return Status Codes
+
 ```java
 Payable.PAYABLE_REQUEST_CODE : 3569;
 Payable.PAYABLE_STATUS_SUCCESS : 222;
@@ -140,6 +142,61 @@ Payable.PAYABLE_STATUS_NOT_LOGIN : 555;
 Payable.PAYABLE_STATUS_FAILED : 0;
 Payable.PAYABLE_INVALID_AMOUNT : 999;
 Payable.PAYABLE_APP_NOT_INSTALLED : 888;
+```
+
+##### * Card Actions
+
+```java
+Payable.TXN_SWIPE : 0;
+Payable.TXN_EMV : 1;
+Payable.TXN_MANUAL : 2;
+Payable.TXN_NFC : 3;
+```
+
+##### Advanced Usage
+
+* If you want to receive the progress updates of the ongoing payment, you need to register a progress listener and make sure you unregister the listener using `unregisterProgressListener()` method on activity `onDestroy()` method
+
+```
+payableClient.registerProgressListener(new PayableProgressListener() {
+
+    @Override
+    public void onCardInteraction(int action, PayableSale payableSale) {
+        
+    }
+
+    @Override
+    public void onPaymentAccepted(PayableSale payableSale) {
+        
+    }
+
+    @Override
+    public void onPaymentRejected(PayableSale payableSale) {
+
+    }
+});
+```
+
+```
+onCardInteraction(int action, PayableSale payableSale)
+```
+
+```
+onPaymentAccepted(PayableSale payableSale)
+```
+
+```
+onPaymentRejected(PayableSale payableSale)
+```
+
+* Unregister progress listener
+
+```
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    payableClient.unregisterProgressListener();
+}
 ```
 
 ##### * Example Activity

@@ -73,6 +73,12 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
             }
         });
 
+        /**
+         * Advanced Usage (Optional):
+         * If you want to receive the progress updates of the ongoing payment, you need to register a progress listener
+         * and make sure you unregister the listener using unregisterProgressListener() method on activity onDestroy() method
+         *
+         */
         payableClient.registerProgressListener(new PayableProgressListener() {
 
             @Override
