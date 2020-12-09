@@ -17,6 +17,7 @@ Android SDK - [android-sdk.payable.lk](https://android-sdk.payable.lk) | [Create
 <b>Step 1.</b> Add the dependency in your app level gradle file:
 ```gradle
 dependencies {
+    ...
     implementation 'com.payable:pay:2.0.4'
 }
 ```
@@ -153,6 +154,8 @@ Payable.TXN_MANUAL : 2;
 Payable.TXN_NFC : 3;
 ```
 
+<hr/>
+
 ### Advanced Usage
 
 ##### Background Progress Listener
@@ -179,23 +182,27 @@ payableClient.registerProgressListener(new PayableProgressListener() {
 });
 ```
 
-* This method will be called in the background when the terminal listens to any card interactions such as ENV, SWIPE, and NFC, this will respond with your sale values and interacted action as `Payable.EMV, Payable.SWIPE, Payable.NFC` and -1 for any error on card interaction. You can get the error description using `payableSale.getMessage()` method.
+<hr/>
 
 ```java
 onCardInteraction(int action, PayableSale payableSale)
 ```
 
-* This method will be called in the background when the terminal accepted the card and.
+* This method will be called in the background when the terminal listens to any card interactions such as ENV, SWIPE, and NFC, this will respond with your sale values and interacted action as `Payable.EMV, Payable.SWIPE, Payable.NFC` and -1 for any error on card interaction. You can get the error description using `payableSale.getMessage()` method.
 
 ```java
 onPaymentAccepted(PayableSale payableSale)
 ```
 
+* This method will be called in the background when the terminal accepts the card and proceed further.
+
 ```java
 onPaymentRejected(PayableSale payableSale)
 ```
 
-* Unregister progress listener
+* This method will be called in the background when the terminal rejects the card or throws any errors from servers.
+
+##### Unregister progress listener
 
 ```
 @Override
