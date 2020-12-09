@@ -82,7 +82,6 @@ protected void onCreate(Bundle savedInstanceState) {
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     ...
     payableClient.handleResponse(requestCode, data);
-
 }
 ```
 
@@ -213,6 +212,7 @@ protected void onDestroy() {
 ```
 
 ##### * Example Activity
+
 ```java
 public class MainActivity extends AppCompatActivity implements PayableListener {
 
@@ -269,6 +269,36 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
                 payableSale(Payable.METHOD_ANY);
             }
         });
+
+        /**
+         * Advanced Usage (Optional):
+         * If you want to receive the progress updates of the ongoing payment, you need to register a progress listener
+         * and make sure you unregister the listener using unregisterProgressListener() method on activity onDestroy() method
+         *
+         */
+        payableClient.registerProgressListener(new PayableProgressListener() {
+
+            @Override
+            public void onCardInteraction(int action, PayableSale payableSale) {
+                Log.e("TEST_IMPL", "onCardInteraction: " + action + " => " + payableSale.toString());
+            }
+
+            @Override
+            public void onPaymentAccepted(PayableSale payableSale) {
+                Log.e("TEST_IMPL", "onPaymentAccepted: " + payableSale.toString());
+            }
+
+            @Override
+            public void onPaymentRejected(PayableSale payableSale) {
+                Log.e("TEST_IMPL", "onPaymentRejected: " + payableSale.toString());
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        payableClient.unregisterProgressListener();
     }
 
     private void payableSale(int paymentMethod) {
@@ -277,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         saleAmount = Double.parseDouble(edtAmount.getText().toString());
 
         // 5. start the payment request to PAYable app with the callback listener { "ORDER_TRACKING" : "123455" }
-        // payableClient.startPayment(saleAmount, paymentMethod,  json\" : \"123455\" }", this);
+        // payableClient.startPayment(saleAmount, paymentMethod, "{ \"ORDER_TRACKING\" : \"123455\" }", this);
         payableClient.startPayment(saleAmount, paymentMethod, this);
     }
 
@@ -287,6 +317,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
         // 7. onActivityResult set the callback listener to handle the response
         payableClient.handleResponse(requestCode, data);
+
     }
 
     // 8. onPaymentSuccess method
@@ -325,6 +356,11 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         responseText += "message: " + payableSale.getMessage() + "\n";
 
         txtResponse.setText(responseText);
+    }
+
+    protected void hideSoftKeyboard(EditText input) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
     }
 }
 ```
