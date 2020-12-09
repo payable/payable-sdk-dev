@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -199,7 +198,6 @@ public class Payable {
 
     public void registerProgressListener(PayableProgressListener progressListener) {
         progressListeners.add(progressListener);
-        Log.e("TEST_IMPL", "registerProgressListener " + progressListeners.size());
         if (progressListeners.size() == 1) {
             IntentFilter intentFilter = new IntentFilter(Payable.TX_RECEIVER + "_" + clientSale.getClientId());
             activity.registerReceiver(broadcastReceiver, intentFilter);
@@ -209,7 +207,6 @@ public class Payable {
     public void unregisterProgressListener() {
         progressListeners.clear();
         try {
-            Log.e("TEST_IMPL", "unregisterProgressListener");
             activity.unregisterReceiver(broadcastReceiver);
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
