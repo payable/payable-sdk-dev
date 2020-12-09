@@ -28,7 +28,7 @@ dependencies {
 
 ### Implementation
 
-<b>1.</b> Import PAYable SDK package.
+<b>1.</b> Import PAYable SDK packages.
 
 ```java
 import com.payable.sdk.Payable;
