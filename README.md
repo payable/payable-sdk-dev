@@ -155,9 +155,9 @@ Payable.TXN_NFC : 3;
 
 ### Advanced Usage
 
-* If you want to receive the progress updates of the ongoing payment, you need to register a progress listener and make sure you unregister the listener using `unregisterProgressListener()` method on activity `onDestroy()` method
+* If you want to receive the progress updates of the ongoing payment in background, you need to register a progress listener and make sure you unregister the listener using `unregisterProgressListener()` method on activity `onDestroy()` method
 
-```
+```java
 payableClient.registerProgressListener(new PayableProgressListener() {
 
     @Override
@@ -177,15 +177,15 @@ payableClient.registerProgressListener(new PayableProgressListener() {
 });
 ```
 
-```
+```java
 onCardInteraction(int action, PayableSale payableSale)
 ```
 
-```
+```java
 onPaymentAccepted(PayableSale payableSale)
 ```
 
-```
+```java
 onPaymentRejected(PayableSale payableSale)
 ```
 
