@@ -153,7 +153,7 @@ Payable.TXN_MANUAL : 2;
 Payable.TXN_NFC : 3;
 ```
 
-##### Advanced Usage
+### Advanced Usage
 
 * If you want to receive the progress updates of the ongoing payment, you need to register a progress listener and make sure you unregister the listener using `unregisterProgressListener()` method on activity `onDestroy()` method
 
