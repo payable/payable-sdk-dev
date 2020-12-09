@@ -205,7 +205,7 @@ onPaymentRejected(PayableSale payableSale)
 
 ##### Unregister progress listener
 
-```
+```java
 @Override
 protected void onDestroy() {
     super.onDestroy();
