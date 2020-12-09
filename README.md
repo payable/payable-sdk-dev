@@ -33,6 +33,8 @@ dependencies {
 ```java
 import com.payable.sdk.Payable;
 import com.payable.sdk.PayableListener;
+import com.payable.sdk.PayableProgressListener;
+import com.payable.sdk.PayableSale;
 ```
 
 <b>2.</b> Implement `PayableListener` and declare PAYable client in your class.
