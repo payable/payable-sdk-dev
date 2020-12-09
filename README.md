@@ -183,7 +183,7 @@ payableClient.registerProgressListener(new PayableProgressListener() {
 });
 ```
 
-<hr/>
+* Explanation for `PayableProgressListener` interface.
 
 ```java
 onCardInteraction(int action, PayableSale payableSale)
