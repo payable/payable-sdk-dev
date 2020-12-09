@@ -120,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
         // 7. onActivityResult set the callback listener to handle the response
         payableClient.handleResponse(requestCode, data);
-
     }
 
     // 8. onPaymentSuccess method
