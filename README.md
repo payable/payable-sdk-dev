@@ -155,7 +155,9 @@ Payable.TXN_NFC : 3;
 
 ### Advanced Usage
 
-* If you want to receive the progress updates of the ongoing payment in background, you need to register a progress listener and make sure you unregister the listener using `unregisterProgressListener()` method on activity `onDestroy()` method
+##### Background Progress Listener
+
+* If you want to receive the progress updates of the ongoing payment in background, you need to register progress listener using `registerProgressListener(listener)` and make sure you unregister the listener using `unregisterProgressListener()` method on activity `onDestroy()` method.
 
 ```java
 payableClient.registerProgressListener(new PayableProgressListener() {
@@ -177,9 +179,13 @@ payableClient.registerProgressListener(new PayableProgressListener() {
 });
 ```
 
+* This method will be called in the background when the terminal listens to any card interactions such as ENV, SWIPE, and NFC, this will respond with your sale values and interacted action as `Payable.EMV, Payable.SWIPE, Payable.NFC` and -1 for any error on card interaction. You can get the error description using `payableSale.getMessage()` method.
+
 ```java
 onCardInteraction(int action, PayableSale payableSale)
 ```
+
+* This method will be called in the background when the terminal accepted the card and.
 
 ```java
 onPaymentAccepted(PayableSale payableSale)
