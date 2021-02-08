@@ -153,17 +153,21 @@ public class Payable {
 
         if (payable.payableListener.onPaymentStart(payable.clientSale)) {
 
-            if (saleAmount > 0) {
+            if (saleAmount >= 1) {
 
                 try {
                     payable.activity.startActivityForResult(getPaymentIntent(), REQUEST_CODE);
                     payable.activity.overridePendingTransition(R.anim.enter, R.anim.exit);
                 } catch (ActivityNotFoundException ex) {
+                    waitDialog.dismiss();
+                    clientSale.setMessage("APP_NOT_INSTALLED");
                     clientSale.setStatusCode(APP_NOT_INSTALLED);
                     payableListener.onPaymentFailure(clientSale);
                 }
 
             } else {
+                waitDialog.dismiss();
+                clientSale.setMessage("INVALID_AMOUNT");
                 clientSale.setStatusCode(INVALID_AMOUNT);
                 payableListener.onPaymentFailure(clientSale);
             }

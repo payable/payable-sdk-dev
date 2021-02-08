@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         actTitle = findViewById(R.id.actTitle);
         actTitle.setText("Main Activity");
 
-        edtAmount.setFilters(AmountInputFilter.getFilter(this, 100000));
+        // edtAmount.setFilters(AmountInputFilter.getFilter(this, 100000));
 
         // 2. Set Payable Client
         payableClient = Payable.createPayableClient(this, "1452", "FOOD_COURT", "C6DFA0B215B2CF24EF04794F718A3FC8");
