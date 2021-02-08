@@ -89,7 +89,9 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 <b>5.</b> On click listener call the method to start payment.
 
+```java
 PayableSale payableSale = new PayableSale( sale_amount: Double, payment_method: Integer);
+```
 
 * Optional parameters
 
@@ -136,7 +138,7 @@ payableClient.startPayment(500.50, Payable.METHOD_ANY, this);
 * For the order tracking you need to pass the tracking number in json data as below.
 
 ```java
-PayableSale payableSale = new PayableSale( /* saleAmount */ 500, Payable.METHOD_ANY);
+PayableSale payableSale = new PayableSale( /* saleAmount */ 500, Payable.METHOD_CARD);
 payableSale.setReceiptSMS("test@payable.lk");
 payableSale.setReceiptSMS("0110000000");
 payableSale.setOrderTracking("invoice56");
