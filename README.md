@@ -93,12 +93,17 @@ PayableSale payableSale = new PayableSale( sale_amount: Double, payment_method: 
 
 * Optional parameters
 
+```java
 payableSale.setReceiptSMS("test@payable.lk");
 payableSale.setReceiptSMS("0110000000");
 payableSale.setOrderTracking("invoice56");
+```
 
 * Start the payment intent
+
+```java
 payableClient.startPayment(payableSale, this);
+```
 
 <!--
 ```java 
@@ -159,6 +164,7 @@ payable.getIsEmv();
 payable.getTxnStatus();
 payable.getReceiptSMS();
 payable.getReceiptEmail();
+payable.getOrderTracking();
 ```
 
 ##### * Return Status Codes
