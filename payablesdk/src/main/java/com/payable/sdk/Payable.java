@@ -124,11 +124,21 @@ public class Payable {
         return i;
     }
 
+    /**
+     * This method will not be available from next version
+     *
+     * @deprecated use {@link #startPayment(PayableSale, PayableListener)} instead.
+     */
     @Deprecated
     public void startPayment(double saleAmount, int paymentMethod, PayableListener payableListenerLocal) {
         startPayment(saleAmount, paymentMethod, "{}", payableListenerLocal);
     }
 
+    /**
+     * This method will not be available from next version
+     *
+     * @deprecated use {@link #startPayment(PayableSale, PayableListener)} instead.
+     */
     @Deprecated
     public void startPayment(double saleAmount, int paymentMethod, String jsonData, PayableListener payableListenerLocal) {
 
