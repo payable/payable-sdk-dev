@@ -195,7 +195,7 @@ Payable.TXN_NFC : 3;
 
 ##### Background Progress Listener
 
-* If you want to receive the progress updates of the ongoing payment in background, you need to register progress listener using `registerProgressListener(listener)` and make sure you unregister the listener using `unregisterProgressListener()` method on activity `onDestroy()` method.
+* If you want to receive the progress updates of the ongoing payment in background, you need to register progress listener using `registerProgressListener(listener)` and make sure you unregister the listener using `unregisterProgressListener()` method on activity `onDestroy()` method to avoid memory leakage.
 
 ```java
 payableClient.registerProgressListener(new PayableProgressListener() {
