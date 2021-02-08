@@ -5,7 +5,7 @@
 Android SDK - [android-sdk.payable.lk](https://android-sdk.payable.lk) | [Create Issue](https://github.com/payable/payable-sdk-dev/issues/new)
 
 [![Build Status](https://travis-ci.com/payable/payable-sdk-dev.svg?branch=master)](https://travis-ci.com/payable/payable-sdk-dev)
-[ ![Download](https://api.bintray.com/packages/payable/android/pay/images/download.svg) ](https://bintray.com/payable/android/pay/link)
+[ ![Download](https://api.bintray.com/packages/payable/android/pay/images/download.svg) ](https://bintray.com/payable/android/pay)
 [![](https://jitpack.io/v/payable/payable-sdk-dev.svg)](https://jitpack.io/#payable/payable-sdk-dev) 
 
 <hr>
