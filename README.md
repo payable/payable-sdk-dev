@@ -89,6 +89,18 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 <b>5.</b> On click listener call the method to start payment.
 
+PayableSale payableSale = new PayableSale( sale_amount: Double, payment_method: Integer);
+
+* Optional parameters
+
+payableSale.setReceiptSMS("test@payable.lk");
+payableSale.setReceiptSMS("0110000000");
+payableSale.setOrderTracking("invoice56");
+
+* Start the payment intent
+payableClient.startPayment(payableSale, this);
+
+<!--
 ```java 
 payableClient.startPayment(sale_amount: Double, payment_method: Integer, payable_listener: PayableListener);
 ```
@@ -98,6 +110,7 @@ If you want to track the sale or need to pass custom data and receive it on paym
 ```java 
 payableClient.startPayment(sale_amount: Double, payment_method: Integer, json_data: String, payable_listener: PayableListener);
 ```
+-->
 
 * Payment methods
 
@@ -109,14 +122,16 @@ Payable.METHOD_WALLET
 
 Example:
 
+<!--
 ```java
 payableClient.startPayment(500.50, Payable.METHOD_ANY, this);
 ```
+-->
 
 * For the order tracking you need to pass the tracking number in json data as below.
 
 ```java
-PayableSale payableSale = new PayableSale( /* saleAmount */ 500, Payable.METHOD_ANY));
+PayableSale payableSale = new PayableSale( /* saleAmount */ 500, Payable.METHOD_ANY);
 payableSale.setReceiptSMS("test@payable.lk");
 payableSale.setReceiptSMS("0110000000");
 payableSale.setOrderTracking("invoice56");
