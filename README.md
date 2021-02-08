@@ -18,7 +18,7 @@ Android SDK - [android-sdk.payable.lk](https://android-sdk.payable.lk) | [Create
 ```gradle
 dependencies {
     ...
-    implementation 'com.payable:pay:+'
+    implementation 'com.payable:pay:3.0.1'
 }
 ```
 
