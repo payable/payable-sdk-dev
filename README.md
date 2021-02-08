@@ -141,7 +141,7 @@ payableSale.setReceiptSMS("test@payable.lk");
 payableSale.setReceiptSMS("0110000000");
 payableSale.setOrderTracking("invoice56");
 
-payableClient.startPayment(payableSale, this);
+payableClient.startPayment(payableSale, /* PayableListener */ this);
 ```
 
 <!--
