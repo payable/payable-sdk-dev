@@ -6,7 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +99,7 @@ public class Payable {
             clientSale.setOut_trade_no(data.getStringExtra("out_trade_no"));
             clientSale.setReceiptSMS(data.getStringExtra("receiptSMS"));
             clientSale.setReceiptEmail(data.getStringExtra("receiptEmail"));
+            clientSale.setOrderTracking(data.getStringExtra("orderTracking"));
             clientSale.setMessage(data.getStringExtra("message"));
             clientSale.setJsonData(data.getStringExtra("JSON_DATA"));
         }
@@ -155,6 +157,10 @@ public class Payable {
             }
 
         }
+    }
+
+    public void startPayment(PayableSale payableSale, PayableListener payableListenerLocal) {
+        startPayment(payableSale.getSaleAmount(), payableSale.getPaymentMethod(), new Gson().toJson(payableSale), payableListenerLocal);
     }
 
     private void setResponseCallback(Intent data, PayableListener payableListenerLocal) {

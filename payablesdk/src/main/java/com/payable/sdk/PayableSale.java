@@ -2,6 +2,9 @@ package com.payable.sdk;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class PayableSale {
 
     // PAYable
@@ -15,6 +18,7 @@ public class PayableSale {
     private String out_trade_no;
     private String receiptSMS;
     private String receiptEmail;
+    private String orderTracking;
 
     // Client
     private int statusCode;
@@ -25,6 +29,15 @@ public class PayableSale {
     private String apiKey;
     private String message;
     private String jsonData;
+
+    public PayableSale() {
+
+    }
+
+    public PayableSale(double saleAmount, int paymentMethod) {
+        this.saleAmount = saleAmount;
+        this.paymentMethod = paymentMethod;
+    }
 
     public String getCcLast4() {
         return ccLast4;
@@ -86,7 +99,7 @@ public class PayableSale {
         return receiptSMS;
     }
 
-    protected void setReceiptSMS(String receiptSMS) {
+    public void setReceiptSMS(String receiptSMS) {
         this.receiptSMS = receiptSMS;
     }
 
@@ -94,7 +107,7 @@ public class PayableSale {
         return receiptEmail;
     }
 
-    protected void setReceiptEmail(String receiptEmail) {
+    public void setReceiptEmail(String receiptEmail) {
         this.receiptEmail = receiptEmail;
     }
 
@@ -181,5 +194,27 @@ public class PayableSale {
 
     public void setOut_trade_no(String out_trade_no) {
         this.out_trade_no = out_trade_no;
+    }
+
+    public String getOrderTracking() {
+
+        if (orderTracking == null) {
+            try {
+                JSONObject jsonObject = new JSONObject(getJsonData());
+                if (jsonObject.has("ORDER_TRACKING")) {
+                    orderTracking = jsonObject.getString("ORDER_TRACKING");
+                } else if (jsonObject.has("orderTracking")) {
+                    orderTracking = jsonObject.getString("orderTracking");
+                }
+            } catch (JSONException e) {
+                orderTracking = null;
+            }
+        }
+
+        return orderTracking;
+    }
+
+    public void setOrderTracking(String orderTracking) {
+        this.orderTracking = orderTracking;
     }
 }

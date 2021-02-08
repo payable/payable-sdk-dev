@@ -116,8 +116,19 @@ payableClient.startPayment(500.50, Payable.METHOD_ANY, this);
 * For the order tracking you need to pass the tracking number in json data as below.
 
 ```java
+PayableSale payableSale = new PayableSale( /* saleAmount */ 500, Payable.METHOD_ANY));
+payableSale.setReceiptSMS("test@payable.lk");
+payableSale.setReceiptSMS("0110000000");
+payableSale.setOrderTracking("invoice56");
+
+payableClient.startPayment(payableSale, this);
+```
+
+<!--
+```java
 payableClient.startPayment(500.50, Payable.METHOD_ANY, "{ \"ORDER_TRACKING\" : \"123455\" }", this);
 ```
+-->
 
 ##### * Return Payable Object
 
