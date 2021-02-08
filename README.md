@@ -254,7 +254,7 @@ protected void onDestroy() {
 ```java
 public class MainActivity extends AppCompatActivity implements PayableListener {
 
-    EditText edtAmount;
+    EditText edtAmount, edtTracking, edtEmail, edtSMS;
     Button btnPayCard, btnPayWallet, btnPay;
     TextView txtResponse, actTitle;
 
@@ -269,12 +269,17 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         setContentView(R.layout.activity_main);
 
         edtAmount = findViewById(R.id.edtAmount);
+        edtTracking = findViewById(R.id.edtTracking);
+        edtEmail = findViewById(R.id.edtEmail);
+        edtSMS = findViewById(R.id.edtSMS);
         btnPayCard = findViewById(R.id.btnPayCard);
         btnPayWallet = findViewById(R.id.btnPayWallet);
         btnPay = findViewById(R.id.btnPay);
         txtResponse = findViewById(R.id.txtResponse);
         actTitle = findViewById(R.id.actTitle);
         actTitle.setText("Main Activity");
+
+        edtAmount.setFilters(AmountInputFilter.getFilter(this, 100000));
 
         // 2. Set Payable Client
         payableClient = Payable.createPayableClient(this, "1452", "FOOD_COURT", "C6DFA0B215B2CF24EF04794F718A3FC8");
@@ -341,12 +346,33 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
     private void payableSale(int paymentMethod) {
 
+        if (edtAmount.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Amount is empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // 4. Convert sale amount to double from EditText
         saleAmount = Double.parseDouble(edtAmount.getText().toString());
 
         // 5. start the payment request to PAYable app with the callback listener { "ORDER_TRACKING" : "123455" }
-        // payableClient.startPayment(saleAmount, paymentMethod, "{ \"ORDER_TRACKING\" : \"123455\" }", this);
-        payableClient.startPayment(saleAmount, paymentMethod, this);
+        // payableClient.startPayment(saleAmount, paymentMethod, "{ \"ORDER_TRACKING\" : \"SDK-TEST\" }", this);
+        // payableClient.startPayment(saleAmount, paymentMethod, this);
+
+        PayableSale payableSale = new PayableSale(saleAmount, paymentMethod);
+
+        if (!edtEmail.getText().toString().isEmpty()) {
+            payableSale.setReceiptEmail(edtEmail.getText().toString());
+        }
+
+        if (!edtSMS.getText().toString().isEmpty()) {
+            payableSale.setReceiptSMS(edtSMS.getText().toString());
+        }
+
+        if (!edtTracking.getText().toString().isEmpty()) {
+            payableSale.setOrderTracking(edtTracking.getText().toString());
+        }
+
+        payableClient.startPayment(payableSale, this);
     }
 
     @Override
@@ -355,7 +381,6 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
         // 7. onActivityResult set the callback listener to handle the response
         payableClient.handleResponse(requestCode, data);
-
     }
 
     // 8. onPaymentSuccess method
@@ -392,6 +417,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         responseText += "receiptEmail: " + payableSale.getReceiptEmail() + "\n";
         responseText += "paymentMethod: " + payableSale.getPaymentMethod() + "\n";
         responseText += "message: " + payableSale.getMessage() + "\n";
+        responseText += "orderTracking: " + payableSale.getOrderTracking() + "\n";
 
         txtResponse.setText(responseText);
     }
