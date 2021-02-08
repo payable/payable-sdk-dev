@@ -90,7 +90,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 <b>5.</b> On click listener call the method to start payment.
 
 ```java
-PayableSale payableSale = new PayableSale( sale_amount: Double, payment_method: Integer);
+PayableSale payableSale = new PayableSale(sale_amount: Double, payment_method: Integer);
 ```
 
 * Optional parameters
