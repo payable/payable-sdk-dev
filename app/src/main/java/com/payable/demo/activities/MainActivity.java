@@ -121,10 +121,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         // 4. Convert sale amount to double from EditText
         saleAmount = Double.parseDouble(edtAmount.getText().toString());
 
-        // 5. start the payment request to PAYable app with the callback listener { "ORDER_TRACKING" : "123455" }
-        // payableClient.startPayment(saleAmount, paymentMethod, "{ \"ORDER_TRACKING\" : \"SDK-TEST\" }", this);
-        // payableClient.startPayment(saleAmount, paymentMethod, this);
-
+        // 5. start the payment request to PAYable app with the callback listener
         PayableSale payableSale = new PayableSale(saleAmount, paymentMethod);
 
         if (!edtEmail.getText().toString().isEmpty()) {
@@ -140,6 +137,10 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         }
 
         payableClient.startPayment(payableSale, this);
+
+        // Deprecated implementations
+        // payableClient.startPayment(saleAmount, paymentMethod, "{ \"ORDER_TRACKING\" : \"SDK-TEST\" }", this);
+        // payableClient.startPayment(saleAmount, paymentMethod, this);
     }
 
     @Override

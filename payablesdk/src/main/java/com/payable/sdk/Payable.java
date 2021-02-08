@@ -124,10 +124,12 @@ public class Payable {
         return i;
     }
 
+    @Deprecated
     public void startPayment(double saleAmount, int paymentMethod, PayableListener payableListenerLocal) {
         startPayment(saleAmount, paymentMethod, "{}", payableListenerLocal);
     }
 
+    @Deprecated
     public void startPayment(double saleAmount, int paymentMethod, String jsonData, PayableListener payableListenerLocal) {
 
         waitDialog = waitDialog == null ? new WaitDialog() : waitDialog;
