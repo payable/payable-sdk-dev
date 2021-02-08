@@ -139,8 +139,8 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         payableClient.startPayment(payableSale, this);
 
         // Deprecated implementations
-        // payableClient.startPayment(saleAmount, paymentMethod, "{ \"ORDER_TRACKING\" : \"SDK-TEST\" }", this);
-        // payableClient.startPayment(saleAmount, paymentMethod, this);
+        payableClient.startPayment(saleAmount, paymentMethod, "{ \"ORDER_TRACKING\" : \"SDK-TEST\" }", this);
+        payableClient.startPayment(saleAmount, paymentMethod, this);
     }
 
     @Override
