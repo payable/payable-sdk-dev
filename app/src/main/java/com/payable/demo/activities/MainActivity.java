@@ -90,17 +90,23 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
             @Override
             public void onCardInteraction(int action, PayableSale payableSale) {
-                Log.e("TEST_IMPL", "onCardInteraction: " + action + " => " + payableSale.toString());
+                Log.e("TEST_IMPL", "background: onCardInteraction: " + action + " => " + payableSale.toString());
+                updateTxtResponse("background: onCardInteraction => " + action);
+                Toast.makeText(getApplicationContext(), "background: onCardInteraction", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onPaymentAccepted(PayableSale payableSale) {
-                Log.e("TEST_IMPL", "onPaymentAccepted: " + payableSale.toString());
+                Log.e("TEST_IMPL", "background: onPaymentAccepted: " + payableSale.toString());
+                updateTxtResponse("background: onPaymentAccepted => " + payableSale.getTxnTypeName());
+                Toast.makeText(getApplicationContext(), "background: onPaymentAccepted", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onPaymentRejected(PayableSale payableSale) {
-                Log.e("TEST_IMPL", "onPaymentRejected: " + payableSale.toString());
+                Log.e("TEST_IMPL", "background: onPaymentRejected => " + payableSale.toString());
+                updateTxtResponse("background: onPaymentRejected: " + payableSale.getMessage());
+                Toast.makeText(getApplicationContext(), "background: onPaymentRejected", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -154,25 +160,28 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
     // 8. onPaymentSuccess method
     @Override
     public boolean onPaymentStart(PayableSale payableSale) {
+        txtResponse.setText("foreground: onPaymentStart => " + payableSale.getSaleAmount());
         return true;
     }
 
     // 8. onPaymentSuccess method
     @Override
     public void onPaymentSuccess(PayableSale payableSale) {
-        updateMyUI(payableSale);
+        updateTxtResponse("foreground: onPaymentSuccess => " + payableSale.getTxId());
+        updateTxtResponse(payableSale);
     }
 
     // 9. onPaymentFailure method
     @Override
     public void onPaymentFailure(PayableSale payableSale) {
-        updateMyUI(payableSale);
+        updateTxtResponse("foreground: onPaymentFailure => " + payableSale.getMessage());
+        updateTxtResponse(payableSale);
     }
 
     // 10. Update..
-    private void updateMyUI(PayableSale payableSale) {
+    private void updateTxtResponse(PayableSale payableSale) {
 
-        String responseText = "statusCode: " + payableSale.getStatusCode() + "\n";
+        String responseText = "\nstatusCode: " + payableSale.getStatusCode() + "\n";
         responseText += "responseAmount: " + payableSale.getSaleAmount() + "\n";
         responseText += "ccLast4: " + payableSale.getCcLast4() + "\n";
         responseText += "cardType: " + payableSale.getCardType() + "\n";
@@ -187,7 +196,11 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         responseText += "message: " + payableSale.getMessage() + "\n";
         responseText += "orderTracking: " + payableSale.getOrderTracking() + "\n";
 
-        txtResponse.setText(responseText);
+        updateTxtResponse(responseText);
+    }
+
+    private void updateTxtResponse(String message) {
+        txtResponse.setText(txtResponse.getText().toString() + "\n" + message);
     }
 
     protected void hideSoftKeyboard(EditText input) {
