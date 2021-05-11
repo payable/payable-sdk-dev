@@ -14,15 +14,24 @@ Android SDK - [android-sdk.payable.lk](https://android-sdk.payable.lk) | [Create
 
 * Request and install **Sandbox** PAYable APP - Testing purpose
 
-<b>Step 1.</b> Add the dependency in your app level gradle file:
+### Initialization
+
+1. Add the below repository into your project level build.gradle file.
+
 ```gradle
-dependencies {
-    ...
-    implementation 'com.payable:pay:3.0.3'
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
 }
 ```
 
-> <b>Deprecated</b> : The `com.github.payable:payable-sdk-dev'` module is deprecated and we recommend to implement our latest `com.payable:pay` module and remove the deprecated implementation from your `build.gradle` if there is already.
+2. Add the below dependency into your module level `build.gradle` file.
+
+```gradle
+implementation 'com.github.payable:payable-sdk-dev:3.4.1'
+```
 
 <hr>
 
