@@ -260,6 +260,7 @@ When you need to request any event from PAYable you will have to register the ev
 
 ```java
 payableClient.registerEventListener(new PayableEventListener() {
+
     @Override
     public void onProfileList(List<PayableProfile> payableProfiles) {
         
