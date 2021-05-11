@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class Payable {
     public static final int TXN_NFC = 3;
 
     public static final String TX_RECEIVER = "payable.intent.action.TX_RECEIVER";
+    public static final String BROADCAST_ACTION = "sdk.intent.action.FROM_PAYMENT_CLIENT";
 
     private Activity activity;
     private static Payable payable;
@@ -40,7 +42,7 @@ public class Payable {
     private WaitDialog waitDialog;
 
     List<PayableProgressListener> progressListeners = new ArrayList<>();
-    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    BroadcastReceiver progressBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra("onCardInteraction")) {
@@ -58,6 +60,29 @@ public class Payable {
                 PayableSale sale = setIntentResponse(intent, clientSale);
                 for (PayableProgressListener progressListener : progressListeners) {
                     progressListener.onPaymentRejected(sale);
+                }
+            }
+        }
+    };
+
+    List<PayableEventListener> eventListeners = new ArrayList<>();
+    BroadcastReceiver eventBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (intent.hasExtra("onProfileList")) {
+
+                List<PayableProfile> payableProfiles = new Gson().fromJson(intent.getStringExtra("onProfileList"), new TypeToken<List<PayableProfile>>() {
+                }.getType());
+                for (PayableEventListener eventListener : eventListeners) {
+                    eventListener.onProfileList(payableProfiles);
+                }
+
+            } else if (intent.hasExtra("onVoid")) {
+
+                PayableResponse payableResponse = new Gson().fromJson(intent.getStringExtra("onVoid"), PayableResponse.class);
+                for (PayableEventListener eventListener : eventListeners) {
+                    eventListener.onVoid(payableResponse);
                 }
             }
         }
@@ -222,16 +247,61 @@ public class Payable {
         progressListeners.add(progressListener);
         if (progressListeners.size() == 1) {
             IntentFilter intentFilter = new IntentFilter(Payable.TX_RECEIVER + "_" + clientSale.getClientId());
-            activity.registerReceiver(broadcastReceiver, intentFilter);
+            activity.registerReceiver(progressBroadcastReceiver, intentFilter);
         }
     }
 
     public void unregisterProgressListener() {
         progressListeners.clear();
         try {
-            activity.unregisterReceiver(broadcastReceiver);
+            activity.unregisterReceiver(progressBroadcastReceiver);
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void registerEventListener(PayableEventListener eventListener) {
+        eventListeners.add(eventListener);
+        if (eventListeners.size() == 1) {
+            IntentFilter intentFilter = new IntentFilter(Payable.TX_RECEIVER + "_EVENT_" + clientSale.getClientId());
+            activity.registerReceiver(eventBroadcastReceiver, intentFilter);
+        }
+    }
+
+    public void unregisterEventListener() {
+        eventListeners.clear();
+        try {
+            activity.unregisterReceiver(eventBroadcastReceiver);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public boolean requestProfileList() {
+        sendBroadcast("requestProfileList");
+        return true;
+    }
+
+    public void sendBroadcast(String sdkAction) {
+        Intent intent = getBroadcastIntent(sdkAction);
+        sendBroadcast(intent);
+    }
+
+    public void sendBroadcast(Intent intent) {
+        activity.sendBroadcast(intent);
+    }
+
+    private Intent getBroadcastIntent(String sdkAction) {
+        Intent intent = new Intent(BROADCAST_ACTION);
+        intent.putExtra("sdkAction", sdkAction);
+        intent.putExtra("clientId", clientSale.getClientId());
+        return intent;
+    }
+
+    public boolean requestVoid(String txId) {
+        Intent intent = getBroadcastIntent("requestVoid");
+        intent.putExtra("txId", txId);
+        sendBroadcast(intent);
+        return true;
     }
 }

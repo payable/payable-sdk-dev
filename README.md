@@ -99,6 +99,7 @@ PayableSale payableSale = new PayableSale(sale_amount: Double, payment_method: I
 payableSale.setReceiptSMS("test@payable.lk");
 payableSale.setReceiptSMS("0110000000");
 payableSale.setOrderTracking("invoice56");
+payableSale.setTerminalId("1254");
 ```
 
 * Start the payment intent
@@ -144,6 +145,12 @@ payableSale.setReceiptSMS("0110000000");
 payableSale.setOrderTracking("invoice56");
 
 payableClient.startPayment(payableSale, /* PayableListener */ this);
+```
+
+* In order to choose a TID for the transaction, you can pass the terminal ID.
+
+```java
+payableSale.setTerminalId("terminalId");
 ```
 
 <!--
@@ -245,6 +252,58 @@ protected void onDestroy() {
     super.onDestroy();
     payableClient.unregisterProgressListener();
 }
+```
+
+##### Register event listener
+
+When you need to request any event from PAYable you will have to register the event listener and unregister it on `onDestroy` method when you are done.
+
+```java
+payableClient.registerEventListener(new PayableEventListener() {
+    @Override
+    public void onProfileList(List<PayableProfile> payableProfiles) {
+        
+    }
+
+    @Override
+    public void onVoid(PayableResponse payableResponse) {
+        
+    }
+});
+```
+
+##### Unregister event listener
+
+```java
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    payableClient.unregisterEventListener();
+}
+```
+
+##### PAYable events
+
+| Method | Callback
+|--|--|
+| `boolean requestProfileList()` | `onProfileList(List<PayableProfile> payableProfiles)`
+| `boolean requestVoid(String txId)` | `onVoid(PayableResponse payableResponse)`
+
+* `PayableProfile`
+
+```java
+String tid;
+String name;
+String currency;
+Integer installment;
+```
+
+* `PAYableResponse`
+
+```java
+int status;
+String txId;
+String error;
 ```
 
 <hr/>

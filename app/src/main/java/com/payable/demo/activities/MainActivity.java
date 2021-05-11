@@ -1,6 +1,8 @@
 package com.payable.demo.activities;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,17 +17,23 @@ import android.widget.Toast;
 import com.payable.demo.R;
 import com.payable.sdk.AmountInputFilter;
 import com.payable.sdk.Payable;
+import com.payable.sdk.PayableEventListener;
 import com.payable.sdk.PayableListener;
+import com.payable.sdk.PayableProfile;
 import com.payable.sdk.PayableProgressListener;
+import com.payable.sdk.PayableResponse;
 import com.payable.sdk.PayableSale;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements PayableListener {
 
-    EditText edtAmount, edtTracking, edtEmail, edtSMS;
-    Button btnPayCard, btnPayWallet, btnPay;
+    EditText edtAmount, edtTracking, edtEmail, edtSMS, edtVoid;
+    Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid;
     TextView txtResponse, actTitle;
 
     double saleAmount = 0;
+    String selectedProfile;
 
     // 1. Declare Payable Client
     Payable payableClient;
@@ -39,9 +47,12 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         edtTracking = findViewById(R.id.edtTracking);
         edtEmail = findViewById(R.id.edtEmail);
         edtSMS = findViewById(R.id.edtSMS);
+        edtVoid = findViewById(R.id.edtVoid);
         btnPayCard = findViewById(R.id.btnPayCard);
         btnPayWallet = findViewById(R.id.btnPayWallet);
         btnPay = findViewById(R.id.btnPay);
+        btnProfile = findViewById(R.id.btnProfile);
+        btnVoid = findViewById(R.id.btnVoid);
         txtResponse = findViewById(R.id.txtResponse);
         actTitle = findViewById(R.id.actTitle);
         actTitle.setText("Main Activity");
@@ -80,6 +91,13 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
             }
         });
 
+        btnProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                payableClient.requestProfileList();
+            }
+        });
+
         /**
          * Advanced Usage (Optional):
          * If you want to receive the progress updates of the ongoing payment, you need to register a progress listener
@@ -109,12 +127,63 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
                 Toast.makeText(getApplicationContext(), "background: onPaymentRejected", Toast.LENGTH_SHORT).show();
             }
         });
+
+        /**
+         * Advanced Usage (Optional):
+         * If you want to make any requests to PAYable and get responses, register the event listener
+         * and make sure you unregister the listener using unregisterEventListener() method on activity onDestroy() method
+         *
+         */
+        payableClient.registerEventListener(new PayableEventListener() {
+            @Override
+            public void onProfileList(final List<PayableProfile> payableProfiles) {
+
+                for (PayableProfile payableProfile : payableProfiles) {
+                    updateFreshTxtResponse("tid: " + payableProfile.tid + " " + payableProfile.currency + " name: " + payableProfile.name + " inst: " + payableProfile.installment);
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+                builder.setTitle("Select Profile");
+
+                String[] profileNames = new String[payableProfiles.size()];
+                for (int i = 0; i < payableProfiles.size(); i++) {
+                    profileNames[i] = "tid: " + payableProfiles.get(i).tid + " " + payableProfiles.get(i).currency + " : name: " + payableProfiles.get(i).name + " inst: " + payableProfiles.get(i).installment;
+                }
+
+                builder.setItems(profileNames, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectedProfile = payableProfiles.get(which).tid;
+                        btnProfile.setText("Selected Profile: " + selectedProfile);
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+
+            @Override
+            public void onVoid(PayableResponse payableResponse) {
+                updateFreshTxtResponse("onVoid: " + payableResponse.status + " txId: " + payableResponse.txId + " error: " + payableResponse.error);
+            }
+
+        });
+
+        btnVoid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!edtVoid.getText().toString().isEmpty()) {
+                    payableClient.requestVoid(edtVoid.getText().toString());
+                }
+            }
+        });
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         payableClient.unregisterProgressListener();
+        payableClient.unregisterEventListener();
     }
 
     private void payableSale(int paymentMethod) {
@@ -140,6 +209,10 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
         if (!edtTracking.getText().toString().isEmpty()) {
             payableSale.setOrderTracking(edtTracking.getText().toString());
+        }
+
+        if (selectedProfile != null) {
+            payableSale.setTerminalId(selectedProfile);
         }
 
         payableClient.startPayment(payableSale, this);
@@ -201,6 +274,11 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
     private void updateTxtResponse(String message) {
         txtResponse.setText(txtResponse.getText().toString() + "\n" + message);
+    }
+
+    private void updateFreshTxtResponse(String message) {
+        txtResponse.setText("");
+        updateTxtResponse(message);
     }
 
     protected void hideSoftKeyboard(EditText input) {

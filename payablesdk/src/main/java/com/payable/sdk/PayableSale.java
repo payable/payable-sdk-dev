@@ -67,7 +67,7 @@ public class PayableSale {
         return terminalId;
     }
 
-    protected void setTerminalId(String terminalId) {
+    public void setTerminalId(String terminalId) {
         this.terminalId = terminalId;
     }
 

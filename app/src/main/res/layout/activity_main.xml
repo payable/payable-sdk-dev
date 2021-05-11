@@ -97,6 +97,37 @@
                 android:textAllCaps="false"
                 android:textColor="#fff" />
 
+            <Button
+                android:id="@+id/btnProfile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#0D47A1"
+                android:paddingLeft="20dp"
+                android:text="Selected Profile: Default"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+
+            <EditText
+                android:id="@+id/edtVoid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:hint="Transaction ID to Void"
+                android:imeOptions="actionDone"
+                android:inputType="phone" />
+
+            <Button
+                android:id="@+id/btnVoid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#0D47A1"
+                android:paddingLeft="20dp"
+                android:text="Void Transaction"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
