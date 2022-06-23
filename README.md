@@ -105,7 +105,7 @@ PayableSale payableSale = new PayableSale(sale_amount: Double, payment_method: I
 * Optional parameters
 
 ```java
-payableSale.setReceiptSMS("test@payable.lk");
+payableSale.setReceiptEmail("test@payable.lk");
 payableSale.setReceiptSMS("0110000000");
 payableSale.setOrderTracking("invoice56");
 payableSale.setTerminalId("1254");
@@ -149,7 +149,7 @@ payableClient.startPayment(500.50, Payable.METHOD_ANY, this);
 
 ```java
 PayableSale payableSale = new PayableSale( /* saleAmount */ 500, Payable.METHOD_CARD);
-payableSale.setReceiptSMS("test@payable.lk");
+payableSale.setReceiptEmail("test@payable.lk");
 payableSale.setReceiptSMS("0110000000");
 payableSale.setOrderTracking("invoice56");
 
