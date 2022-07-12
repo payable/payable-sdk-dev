@@ -30,7 +30,7 @@ allprojects {
 2. Add the below dependency into your module level `build.gradle` file.
 
 ```gradle
-implementation 'com.github.payable:payable-sdk-dev:3.4.1'
+implementation 'com.github.payable:payable-sdk-dev:3.4.2'
 ```
 
 <hr>
