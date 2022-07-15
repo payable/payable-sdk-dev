@@ -6,7 +6,7 @@ publish {
     repoName = 'android'
     groupId = 'com.payable'
     artifactId = 'pay'
-    publishVersion = '3.4.2'
+    publishVersion = '3.4.3'
     desc = 'PAYable Android SDK'
     website = 'https://android-sdk.payable.lk'
 }
@@ -17,8 +17,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 342
-        versionName "3.4.2"
+        versionCode 343
+        versionName "3.4.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

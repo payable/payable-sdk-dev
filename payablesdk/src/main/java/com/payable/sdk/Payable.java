@@ -32,6 +32,15 @@ public class Payable {
     public static final int TXN_MANUAL = 2;
     public static final int TXN_NFC = 3;
 
+    public static final int CARD_TYPE_VISA = 1;
+    public static final int CARD_TYPE_MASTER = 3;
+    public static final int CARD_TYPE_AMEX = 2;
+    public static final int CARD_TYPE_DINERS = 4;
+    public static final int CARD_TYPE_MAESTRO = 5;
+    public static final int CARD_TYPE_CUP = 6;
+    public static final int CARD_TYPE_JCB = 7;
+    public static final int WALLET_QPLUS = 8;
+
     public static final String TX_RECEIVER = "payable.intent.action.TX_RECEIVER";
     public static final String BROADCAST_ACTION = "sdk.intent.action.FROM_PAYMENT_CLIENT";
 
@@ -115,6 +124,7 @@ public class Payable {
             clientSale.setSaleAmount(data.getDoubleExtra("PAY_AMOUNT", 0));
             clientSale.setPaymentMethod(data.getIntExtra("PAY_METHOD", 0));
             clientSale.setCcLast4(data.getStringExtra("ccLast4"));
+            clientSale.setCardNo(data.getStringExtra("cardNo"));
             clientSale.setCardType(data.getIntExtra("cardType", 0));
             clientSale.setTxId(data.getStringExtra("txId"));
             clientSale.setTerminalId(data.getStringExtra("terminalId"));
@@ -298,10 +308,34 @@ public class Payable {
         return intent;
     }
 
+    /**
+     * This method will not be available from next version
+     *
+     * @deprecated use {@link #requestVoid(String txId, int cardType)} instead.
+     */
+    @Deprecated
     public boolean requestVoid(String txId) {
         Intent intent = getBroadcastIntent("requestVoid");
         intent.putExtra("txId", txId);
         sendBroadcast(intent);
         return true;
     }
+
+    public boolean requestVoid(String txId, int cardType) {
+        Intent intent = getBroadcastIntent("requestVoid");
+        intent.putExtra("txId", txId);
+        intent.putExtra("cardType", cardType);
+        sendBroadcast(intent);
+        return true;
+    }
+
+    // public boolean requestVoid(String txId, int cardType, String receiptSMS, String receiptEmail) {
+    //     Intent intent = getBroadcastIntent("requestVoid");
+    //     intent.putExtra("txId", txId);
+    //     intent.putExtra("cardType", cardType);
+    //     intent.putExtra("receiptSMS", receiptSMS);
+    //     intent.putExtra("receiptEmail", receiptEmail);
+    //     sendBroadcast(intent);
+    //     return true;
+    // }
 }

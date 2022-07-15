@@ -1,6 +1,7 @@
 package com.payable.sdk;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,6 +20,7 @@ public class PayableSale {
     private String receiptSMS;
     private String receiptEmail;
     private String orderTracking;
+    private String cardNo;
 
     // Client
     private int statusCode;
@@ -216,5 +218,13 @@ public class PayableSale {
 
     public void setOrderTracking(String orderTracking) {
         this.orderTracking = orderTracking;
+    }
+
+    public String getCardNo() {
+        return cardNo;
+    }
+
+    public void setCardNo(String cardNo) {
+        this.cardNo = cardNo;
     }
 }

@@ -23,6 +23,7 @@ import com.payable.sdk.PayableProfile;
 import com.payable.sdk.PayableProgressListener;
 import com.payable.sdk.PayableResponse;
 import com.payable.sdk.PayableSale;
+import com.payable.sdk.Picker;
 
 import java.util.List;
 
@@ -173,7 +174,12 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
             @Override
             public void onClick(View v) {
                 if (!edtVoid.getText().toString().isEmpty()) {
-                    payableClient.requestVoid(edtVoid.getText().toString());
+                    Picker.cardTypePicker(MainActivity.this, new Picker.CardTypePickerListener() {
+                        @Override
+                        public void onSelected(int cardType) {
+                            payableClient.requestVoid(edtVoid.getText().toString(), cardType);
+                        }
+                    });
                 }
             }
         });
@@ -257,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         String responseText = "\nstatusCode: " + payableSale.getStatusCode() + "\n";
         responseText += "responseAmount: " + payableSale.getSaleAmount() + "\n";
         responseText += "ccLast4: " + payableSale.getCcLast4() + "\n";
+        responseText += "cardNo: " + payableSale.getCardNo() + "\n";
         responseText += "cardType: " + payableSale.getCardType() + "\n";
         responseText += "txId: " + payableSale.getTxId() + "\n";
         responseText += "terminalId: " + payableSale.getTerminalId() + "\n";
