@@ -7,4 +7,6 @@ public interface PayableEventListener {
     void onProfileList(List<PayableProfile> payableProfiles);
 
     void onVoid(PayableResponse payableResponse);
+
+    void onTransactionStatus(PayableTxStatusResponse payableResponse);
 }

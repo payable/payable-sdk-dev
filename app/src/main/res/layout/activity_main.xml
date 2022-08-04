@@ -109,11 +109,11 @@
                 android:textColor="#fff" />
 
             <EditText
-                android:id="@+id/edtVoid"
+                android:id="@+id/edtTxnId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:hint="Transaction ID to Void"
+                android:hint="Transaction ID to Void/Status"
                 android:imeOptions="actionDone"
                 android:inputType="phone" />
 
@@ -125,6 +125,17 @@
                 android:background="#0D47A1"
                 android:paddingLeft="20dp"
                 android:text="Void Transaction"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+
+            <Button
+                android:id="@+id/btnStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#0D47A1"
+                android:paddingLeft="20dp"
+                android:text="Transaction Status"
                 android:textAllCaps="false"
                 android:textColor="#fff" />
 

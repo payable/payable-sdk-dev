@@ -23,14 +23,15 @@ import com.payable.sdk.PayableProfile;
 import com.payable.sdk.PayableProgressListener;
 import com.payable.sdk.PayableResponse;
 import com.payable.sdk.PayableSale;
+import com.payable.sdk.PayableTxStatusResponse;
 import com.payable.sdk.Picker;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements PayableListener {
 
-    EditText edtAmount, edtTracking, edtEmail, edtSMS, edtVoid;
-    Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid;
+    EditText edtAmount, edtTracking, edtEmail, edtSMS, edtTxnId;
+    Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid, btnStatus;
     TextView txtResponse, actTitle;
 
     double saleAmount = 0;
@@ -48,12 +49,13 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         edtTracking = findViewById(R.id.edtTracking);
         edtEmail = findViewById(R.id.edtEmail);
         edtSMS = findViewById(R.id.edtSMS);
-        edtVoid = findViewById(R.id.edtVoid);
+        edtTxnId = findViewById(R.id.edtTxnId);
         btnPayCard = findViewById(R.id.btnPayCard);
         btnPayWallet = findViewById(R.id.btnPayWallet);
         btnPay = findViewById(R.id.btnPay);
         btnProfile = findViewById(R.id.btnProfile);
         btnVoid = findViewById(R.id.btnVoid);
+        btnStatus = findViewById(R.id.btnStatus);
         txtResponse = findViewById(R.id.txtResponse);
         actTitle = findViewById(R.id.actTitle);
         actTitle.setText("Main Activity");
@@ -168,16 +170,34 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
                 updateFreshTxtResponse("onVoid: " + payableResponse.status + " txId: " + payableResponse.txId + " error: " + payableResponse.error);
             }
 
+            @Override
+            public void onTransactionStatus(PayableTxStatusResponse payableResponse) {
+                updateFreshTxtResponse("onTransactionStatus: " + payableResponse.toString());
+            }
         });
 
         btnVoid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!edtVoid.getText().toString().isEmpty()) {
+                if (!edtTxnId.getText().toString().isEmpty()) {
                     Picker.cardTypePicker(MainActivity.this, new Picker.CardTypePickerListener() {
                         @Override
                         public void onSelected(int cardType) {
-                            payableClient.requestVoid(edtVoid.getText().toString(), cardType);
+                            payableClient.requestVoid(edtTxnId.getText().toString(), cardType);
+                        }
+                    });
+                }
+            }
+        });
+
+        btnStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!edtTxnId.getText().toString().isEmpty()) {
+                    Picker.cardTypePicker(MainActivity.this, new Picker.CardTypePickerListener() {
+                        @Override
+                        public void onSelected(int cardType) {
+                            payableClient.requestTransactionStatus(edtTxnId.getText().toString(), cardType);
                         }
                     });
                 }
@@ -248,6 +268,8 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
     public void onPaymentSuccess(PayableSale payableSale) {
         updateTxtResponse("foreground: onPaymentSuccess => " + payableSale.getTxId());
         updateTxtResponse(payableSale);
+
+        edtTxnId.setText(payableSale.getTxId());
     }
 
     // 9. onPaymentFailure method

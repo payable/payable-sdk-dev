@@ -3,9 +3,14 @@ package com.payable.sdk;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -32,6 +37,7 @@ public class Payable {
     public static final int TXN_MANUAL = 2;
     public static final int TXN_NFC = 3;
 
+    public static final int CARD_TYPE_OTHER = 0;
     public static final int CARD_TYPE_VISA = 1;
     public static final int CARD_TYPE_MASTER = 3;
     public static final int CARD_TYPE_AMEX = 2;
@@ -51,22 +57,33 @@ public class Payable {
     private WaitDialog waitDialog;
 
     List<PayableProgressListener> progressListeners = new ArrayList<>();
+
     BroadcastReceiver progressBroadcastReceiver = new BroadcastReceiver() {
+
         @Override
         public void onReceive(Context context, Intent intent) {
+
             if (intent.hasExtra("onCardInteraction")) {
+
                 int interaction = intent.getIntExtra("onCardInteraction", -1);
                 PayableSale sale = setIntentResponse(intent, clientSale);
+
                 for (PayableProgressListener progressListener : progressListeners) {
                     progressListener.onCardInteraction(interaction, sale);
                 }
+
             } else if (intent.hasExtra("onPaymentAccepted")) {
+
                 PayableSale sale = setIntentResponse(intent, clientSale);
+
                 for (PayableProgressListener progressListener : progressListeners) {
                     progressListener.onPaymentAccepted(sale);
                 }
+
             } else if (intent.hasExtra("onPaymentRejected")) {
+
                 PayableSale sale = setIntentResponse(intent, clientSale);
+
                 for (PayableProgressListener progressListener : progressListeners) {
                     progressListener.onPaymentRejected(sale);
                 }
@@ -75,7 +92,9 @@ public class Payable {
     };
 
     List<PayableEventListener> eventListeners = new ArrayList<>();
+
     BroadcastReceiver eventBroadcastReceiver = new BroadcastReceiver() {
+
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -83,6 +102,7 @@ public class Payable {
 
                 List<PayableProfile> payableProfiles = new Gson().fromJson(intent.getStringExtra("onProfileList"), new TypeToken<List<PayableProfile>>() {
                 }.getType());
+
                 for (PayableEventListener eventListener : eventListeners) {
                     eventListener.onProfileList(payableProfiles);
                 }
@@ -90,8 +110,17 @@ public class Payable {
             } else if (intent.hasExtra("onVoid")) {
 
                 PayableResponse payableResponse = new Gson().fromJson(intent.getStringExtra("onVoid"), PayableResponse.class);
+
                 for (PayableEventListener eventListener : eventListeners) {
                     eventListener.onVoid(payableResponse);
+                }
+
+            } else if (intent.hasExtra("onTransactionStatus")) {
+
+                PayableTxStatusResponse payableResponse = new Gson().fromJson(intent.getStringExtra("onTransactionStatus"), PayableTxStatusResponse.class);
+
+                for (PayableEventListener eventListener : eventListeners) {
+                    eventListener.onTransactionStatus(payableResponse);
                 }
             }
         }
@@ -298,6 +327,14 @@ public class Payable {
     }
 
     public void sendBroadcast(Intent intent) {
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+
+            if (!Build.MODEL.contains("WPOS")) {
+                intent.setComponent(new ComponentName("com.cba.payable", "com.mpos.client.PaymentClientBroadcastReceiver"));
+            }
+        }
+
         activity.sendBroadcast(intent);
     }
 
@@ -308,6 +345,46 @@ public class Payable {
         return intent;
     }
 
+    private boolean validateRequest(String txId, String event) {
+
+        PayableResponse payableResponse = new PayableResponse();
+        payableResponse.txId = txId;
+
+        try {
+
+            long id = Long.parseLong(txId);
+            if (id <= 0) throw new NumberFormatException();
+
+            activity.getPackageManager().getApplicationInfo("com.cba.payable", PackageManager.GET_META_DATA);
+
+        } catch (NumberFormatException ex) {
+
+            payableResponse.status = INVALID_AMOUNT;
+            payableResponse.error = "INVALID_AMOUNT";
+
+            sendEventBroadcastAsPayable(activity, clientSale.getClientId(), event, new Gson().toJson(payableResponse));
+
+            return false;
+
+        } catch (PackageManager.NameNotFoundException e) {
+
+            payableResponse.status = APP_NOT_INSTALLED;
+            payableResponse.error = "APP_NOT_INSTALLED";
+
+            sendEventBroadcastAsPayable(activity, clientSale.getClientId(), event, new Gson().toJson(payableResponse));
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public static void sendEventBroadcastAsPayable(Context context, String clientId, String key, String value) {
+        Intent intent = new Intent(TX_RECEIVER + "_EVENT_" + clientId);
+        intent.putExtra(key, value);
+        context.sendBroadcast(intent);
+    }
+
     /**
      * This method will not be available from next version
      *
@@ -315,6 +392,11 @@ public class Payable {
      */
     @Deprecated
     public boolean requestVoid(String txId) {
+
+        if (!validateRequest(txId, "onVoid")) {
+            return false;
+        }
+
         Intent intent = getBroadcastIntent("requestVoid");
         intent.putExtra("txId", txId);
         sendBroadcast(intent);
@@ -322,7 +404,25 @@ public class Payable {
     }
 
     public boolean requestVoid(String txId, int cardType) {
+
+        if (!validateRequest(txId, "onVoid")) {
+            return false;
+        }
+
         Intent intent = getBroadcastIntent("requestVoid");
+        intent.putExtra("txId", txId);
+        intent.putExtra("cardType", cardType);
+        sendBroadcast(intent);
+        return true;
+    }
+
+    public boolean requestTransactionStatus(String txId, int cardType) {
+
+        if (!validateRequest(txId, "onTransactionStatus")) {
+            return false;
+        }
+
+        Intent intent = getBroadcastIntent("requestTxStatus");
         intent.putExtra("txId", txId);
         intent.putExtra("cardType", cardType);
         sendBroadcast(intent);
