@@ -355,7 +355,13 @@ public class Payable {
             long id = Long.parseLong(txId);
             if (id <= 0) throw new NumberFormatException();
 
-            activity.getPackageManager().getApplicationInfo("com.cba.payable", PackageManager.GET_META_DATA);
+            String packageName = "com.cba.payable";
+
+            if (Build.MODEL.contains("WPOS")) {
+                packageName = "com.cba.payable.wpos";
+            }
+
+            activity.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
 
         } catch (NumberFormatException ex) {
 
