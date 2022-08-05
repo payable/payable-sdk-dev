@@ -172,7 +172,11 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
             @Override
             public void onTransactionStatus(PayableTxStatusResponse payableResponse) {
-                updateFreshTxtResponse("onTransactionStatus: " + payableResponse.toString());
+                if (payableResponse.error != null) {
+                    updateFreshTxtResponse("onTransactionStatus: " + payableResponse.status + " txId: " + payableResponse.txId + " error: " + payableResponse.error);
+                } else {
+                    updateFreshTxtResponse("onTransactionStatus: " + payableResponse.toString());
+                }
             }
         });
 
