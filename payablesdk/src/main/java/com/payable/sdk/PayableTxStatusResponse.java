@@ -1,11 +1,13 @@
 package com.payable.sdk;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class PayableTxStatusResponse extends PayableResponse {
 
     @Expose
-    public String cardHolder;
+    @SerializedName("cardHolder")
+    public String cardName;
 
     @Expose
     public String ccLast4;
@@ -20,16 +22,8 @@ public class PayableTxStatusResponse extends PayableResponse {
     public String time;
 
     @Expose
-    public String approvalCode;
-
-    @Expose
-    public int sigFlag;
-
-    @Expose
-    public int batchNo;
-
-    @Expose
-    public String merchantInvoiceId;
+    @SerializedName("merchantInvoiceId")
+    public String orderTracking;
 
     @Expose
     public int txType;
@@ -41,60 +35,32 @@ public class PayableTxStatusResponse extends PayableResponse {
     public int installment;
 
     @Expose
-    public String rrn;
-
-    @Expose
-    public int cvm;
-
-    @Expose
     public String tid;
 
     @Expose
     public String mid;
 
     @Expose
-    public int stn;
-
-    @Expose
-    public String aid;
-
-    @Expose
-    public String applable;
-
-    @Expose
-    public String bin;
-
-    public String maskedCardNo() {
-        return super.maskedCardNo(ccLast4, bin);
-    }
+    public String cardNo;
 
     @Override
     public String toString() {
-        return "PayableTxStatusResponse {" +
-                "\nstatus=" + status +
-                ", \ntxId='" + txId + '\'' +
-                ", \nerror='" + error + '\'' +
-                ", \ncardHolder='" + cardHolder + '\'' +
-                ", \nccLast4='" + ccLast4 + '\'' +
-                ", \namount=" + amount +
-                ", \ncardType=" + cardType +
-                ", \ntime='" + time + '\'' +
-                ", \napprovalCode='" + approvalCode + '\'' +
-                ", \nsigFlag=" + sigFlag +
-                ", \nbatchNo=" + batchNo +
-                ", \nmerchantInvoiceId='" + merchantInvoiceId + '\'' +
-                ", \ntxType=" + txType +
-                ", \ncurrencyType=" + currencyType +
-                ", \ninstallment=" + installment +
-                ", \nrrn='" + rrn + '\'' +
-                ", \ncvm=" + cvm +
-                ", \ntid='" + tid + '\'' +
-                ", \nmid='" + mid + '\'' +
-                ", \nstn=" + stn +
-                ", \naid='" + aid + '\'' +
-                ", \napplable='" + applable + '\'' +
-                ", \nbin='" + bin + '\'' +
-                ", \nmaskedCardNo='" + maskedCardNo() + '\'' +
-                "\n}";
+        return "PayableTxStatusResponse{" +
+                "status=" + status +
+                ", txId='" + txId + '\'' +
+                ", error='" + error + '\'' +
+                ", cardName='" + cardName + '\'' +
+                ", ccLast4='" + ccLast4 + '\'' +
+                ", amount=" + amount +
+                ", cardType=" + cardType +
+                ", time='" + time + '\'' +
+                ", orderTracking='" + orderTracking + '\'' +
+                ", txType=" + txType +
+                ", currencyType=" + currencyType +
+                ", installment=" + installment +
+                ", tid='" + tid + '\'' +
+                ", mid='" + mid + '\'' +
+                ", cardNo='" + cardNo + '\'' +
+                '}';
     }
 }
