@@ -299,6 +299,8 @@ protected void onDestroy() {
 | `boolean requestVoid(String txId, int cardType);` | `onVoid(PayableResponse payableResponse)`
 | `boolean requestTransactionStatus(String txId, int cardType)` | `onTransactionStatus(PayableTxStatusResponse payableResponse)`
 
+<br/>
+
 * `PayableProfile`
 
 ```java
@@ -314,6 +316,34 @@ Integer installment;
 int status;
 String txId;
 String error;
+```
+
+* `PayableTxStatusResponse`
+
+```java
+String cardName;
+
+String ccLast4;
+
+double amount;
+
+int cardType;
+
+String time;
+
+String orderTracking;
+
+int txType;
+
+int currencyType;
+
+int installment;
+
+String tid;
+
+String mid;
+
+String cardNo;
 ```
 
 <hr/>
