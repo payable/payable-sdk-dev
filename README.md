@@ -297,7 +297,8 @@ protected void onDestroy() {
 | Method | Callback
 |--|--|
 | `boolean requestProfileList()` | `onProfileList(List<PayableProfile> payableProfiles)`
-| `boolean requestVoid(String txId)` | `onVoid(PayableResponse payableResponse)`
+| `boolean requestVoid(String txId, int cardType);` | `onVoid(PayableResponse payableResponse)`
+| `boolean requestTransactionStatus(String txId, int cardType)` | `onTransactionStatus(PayableTxStatusResponse payableResponse)`
 
 * `PayableProfile`
 
@@ -323,11 +324,12 @@ String error;
 ```java
 public class MainActivity extends AppCompatActivity implements PayableListener {
 
-    EditText edtAmount, edtTracking, edtEmail, edtSMS;
-    Button btnPayCard, btnPayWallet, btnPay;
+    EditText edtAmount, edtTracking, edtEmail, edtSMS, edtTxnId;
+    Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid, btnStatus;
     TextView txtResponse, actTitle;
 
     double saleAmount = 0;
+    String selectedProfile;
 
     // 1. Declare Payable Client
     Payable payableClient;
@@ -341,9 +343,13 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         edtTracking = findViewById(R.id.edtTracking);
         edtEmail = findViewById(R.id.edtEmail);
         edtSMS = findViewById(R.id.edtSMS);
+        edtTxnId = findViewById(R.id.edtTxnId);
         btnPayCard = findViewById(R.id.btnPayCard);
         btnPayWallet = findViewById(R.id.btnPayWallet);
         btnPay = findViewById(R.id.btnPay);
+        btnProfile = findViewById(R.id.btnProfile);
+        btnVoid = findViewById(R.id.btnVoid);
+        btnStatus = findViewById(R.id.btnStatus);
         txtResponse = findViewById(R.id.txtResponse);
         actTitle = findViewById(R.id.actTitle);
         actTitle.setText("Main Activity");
@@ -382,6 +388,13 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
             }
         });
 
+        btnProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                payableClient.requestProfileList();
+            }
+        });
+
         /**
          * Advanced Usage (Optional):
          * If you want to receive the progress updates of the ongoing payment, you need to register a progress listener
@@ -392,17 +405,100 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
             @Override
             public void onCardInteraction(int action, PayableSale payableSale) {
-                Log.e("TEST_IMPL", "onCardInteraction: " + action + " => " + payableSale.toString());
+                Log.e("TEST_IMPL", "background: onCardInteraction: " + action + " => " + payableSale.toString());
+                updateTxtResponse("background: onCardInteraction => " + action);
+                Toast.makeText(getApplicationContext(), "background: onCardInteraction", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onPaymentAccepted(PayableSale payableSale) {
-                Log.e("TEST_IMPL", "onPaymentAccepted: " + payableSale.toString());
+                Log.e("TEST_IMPL", "background: onPaymentAccepted: " + payableSale.toString());
+                updateTxtResponse("background: onPaymentAccepted => " + payableSale.getTxnTypeName());
+                Toast.makeText(getApplicationContext(), "background: onPaymentAccepted", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onPaymentRejected(PayableSale payableSale) {
-                Log.e("TEST_IMPL", "onPaymentRejected: " + payableSale.toString());
+                Log.e("TEST_IMPL", "background: onPaymentRejected => " + payableSale.toString());
+                updateTxtResponse("background: onPaymentRejected: " + payableSale.getMessage());
+                Toast.makeText(getApplicationContext(), "background: onPaymentRejected", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        /**
+         * Advanced Usage (Optional):
+         * If you want to make any requests to PAYable and get responses, register the event listener
+         * and make sure you unregister the listener using unregisterEventListener() method on activity onDestroy() method
+         *
+         */
+        payableClient.registerEventListener(new PayableEventListener() {
+            @Override
+            public void onProfileList(final List<PayableProfile> payableProfiles) {
+
+                for (PayableProfile payableProfile : payableProfiles) {
+                    updateFreshTxtResponse("tid: " + payableProfile.tid + " " + payableProfile.currency + " name: " + payableProfile.name + " inst: " + payableProfile.installment);
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+                builder.setTitle("Select Profile");
+
+                String[] profileNames = new String[payableProfiles.size()];
+                for (int i = 0; i < payableProfiles.size(); i++) {
+                    profileNames[i] = "tid: " + payableProfiles.get(i).tid + " " + payableProfiles.get(i).currency + " : name: " + payableProfiles.get(i).name + " inst: " + payableProfiles.get(i).installment;
+                }
+
+                builder.setItems(profileNames, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectedProfile = payableProfiles.get(which).tid;
+                        btnProfile.setText("Selected Profile: " + selectedProfile);
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+
+            @Override
+            public void onVoid(PayableResponse payableResponse) {
+                updateFreshTxtResponse("onVoid: " + payableResponse.status + " txId: " + payableResponse.txId + " error: " + payableResponse.error);
+            }
+
+            @Override
+            public void onTransactionStatus(PayableTxStatusResponse payableResponse) {
+                if (payableResponse.error != null) {
+                    updateFreshTxtResponse("onTransactionStatus: " + payableResponse.status + " txId: " + payableResponse.txId + " error: " + payableResponse.error);
+                } else {
+                    updateFreshTxtResponse("onTransactionStatus: " + payableResponse.toString());
+                }
+            }
+        });
+
+        btnVoid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!edtTxnId.getText().toString().isEmpty()) {
+                    Picker.cardTypePicker(MainActivity.this, new Picker.CardTypePickerListener() {
+                        @Override
+                        public void onSelected(int cardType) {
+                            payableClient.requestVoid(edtTxnId.getText().toString(), cardType);
+                        }
+                    });
+                }
+            }
+        });
+
+        btnStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!edtTxnId.getText().toString().isEmpty()) {
+                    Picker.cardTypePicker(MainActivity.this, new Picker.CardTypePickerListener() {
+                        @Override
+                        public void onSelected(int cardType) {
+                            payableClient.requestTransactionStatus(edtTxnId.getText().toString(), cardType);
+                        }
+                    });
+                }
             }
         });
     }
@@ -411,6 +507,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
     protected void onDestroy() {
         super.onDestroy();
         payableClient.unregisterProgressListener();
+        payableClient.unregisterEventListener();
     }
 
     private void payableSale(int paymentMethod) {
@@ -438,6 +535,10 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
             payableSale.setOrderTracking(edtTracking.getText().toString());
         }
 
+        if (selectedProfile != null) {
+            payableSale.setTerminalId(selectedProfile);
+        }
+
         payableClient.startPayment(payableSale, this);
 
         // Deprecated implementations
@@ -456,27 +557,33 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
     // 8. onPaymentSuccess method
     @Override
     public boolean onPaymentStart(PayableSale payableSale) {
+        txtResponse.setText("foreground: onPaymentStart => " + payableSale.getSaleAmount());
         return true;
     }
 
     // 8. onPaymentSuccess method
     @Override
     public void onPaymentSuccess(PayableSale payableSale) {
-        updateMyUI(payableSale);
+        updateTxtResponse("foreground: onPaymentSuccess => " + payableSale.getTxId());
+        updateTxtResponse(payableSale);
+
+        edtTxnId.setText(payableSale.getTxId());
     }
 
     // 9. onPaymentFailure method
     @Override
     public void onPaymentFailure(PayableSale payableSale) {
-        updateMyUI(payableSale);
+        updateTxtResponse("foreground: onPaymentFailure => " + payableSale.getMessage());
+        updateTxtResponse(payableSale);
     }
 
     // 10. Update..
-    private void updateMyUI(PayableSale payableSale) {
+    private void updateTxtResponse(PayableSale payableSale) {
 
-        String responseText = "statusCode: " + payableSale.getStatusCode() + "\n";
+        String responseText = "\nstatusCode: " + payableSale.getStatusCode() + "\n";
         responseText += "responseAmount: " + payableSale.getSaleAmount() + "\n";
         responseText += "ccLast4: " + payableSale.getCcLast4() + "\n";
+        responseText += "cardNo: " + payableSale.getCardNo() + "\n";
         responseText += "cardType: " + payableSale.getCardType() + "\n";
         responseText += "txId: " + payableSale.getTxId() + "\n";
         responseText += "terminalId: " + payableSale.getTerminalId() + "\n";
@@ -489,7 +596,16 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         responseText += "message: " + payableSale.getMessage() + "\n";
         responseText += "orderTracking: " + payableSale.getOrderTracking() + "\n";
 
-        txtResponse.setText(responseText);
+        updateTxtResponse(responseText);
+    }
+
+    private void updateTxtResponse(String message) {
+        txtResponse.setText(txtResponse.getText().toString() + "\n" + message);
+    }
+
+    private void updateFreshTxtResponse(String message) {
+        txtResponse.setText("");
+        updateTxtResponse(message);
     }
 
     protected void hideSoftKeyboard(EditText input) {
