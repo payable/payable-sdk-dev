@@ -5,7 +5,6 @@
 Android SDK - [android-sdk.payable.lk](https://android-sdk.payable.lk) | [Create Issue](https://github.com/payable/payable-sdk-dev/issues/new)
 
 [![Build Status](https://travis-ci.com/payable/payable-sdk-dev.svg?branch=master)](https://travis-ci.com/payable/payable-sdk-dev)
-[ ![Download](https://api.bintray.com/packages/payable/android/pay/images/download.svg) ](https://bintray.com/payable/android/pay)
 [![](https://jitpack.io/v/payable/payable-sdk-dev.svg)](https://jitpack.io/#payable/payable-sdk-dev) 
 
 <hr>
@@ -16,7 +15,7 @@ Android SDK - [android-sdk.payable.lk](https://android-sdk.payable.lk) | [Create
 
 ### Initialization
 
-1. Add the below repository into your project level build.gradle file.
+1. Add the below repository into your project level `settings.gradle` or `build.gradle` file.
 
 ```gradle
 allprojects {
@@ -30,7 +29,7 @@ allprojects {
 2. Add the below dependency into your module level `build.gradle` file.
 
 ```gradle
-implementation 'com.github.payable:payable-sdk-dev:3.4.3'
+implementation 'com.github.payable:payable-sdk-dev:3.5.2'
 ```
 
 <hr>
@@ -103,7 +102,7 @@ PayableSale payableSale = new PayableSale(sale_amount: Double, payment_method: I
 ```
 
 * Optional parameters
-
+ReadMe
 ```java
 payableSale.setReceiptEmail("test@payable.lk");
 payableSale.setReceiptSMS("0110000000");
@@ -187,7 +186,7 @@ payable.getOrderTracking();
 
 ##### * Return Status Codes
 
-```java
+```javaReadMe
 Payable.PAYABLE_REQUEST_CODE : 3569;
 Payable.PAYABLE_STATUS_SUCCESS : 222;
 Payable.PAYABLE_STATUS_NOT_LOGIN : 555;
