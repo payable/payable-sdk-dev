@@ -322,27 +322,16 @@ String error;
 
 ```java
 String cardName;
-
 String ccLast4;
-
 double amount;
-
 int cardType;
-
 String time;
-
 String orderTracking;
-
 int txType;
-
 int currencyType;
-
 int installment;
-
 String tid;
-
 String mid;
-
 String cardNo;
 ```
 
