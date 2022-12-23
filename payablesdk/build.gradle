@@ -1,15 +1,4 @@
-apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'com.android.library'
-
-publish {
-    userOrg = 'payable'
-    repoName = 'android'
-    groupId = 'com.payable'
-    artifactId = 'pay'
-    publishVersion = '3.5.2'
-    desc = 'PAYable Android SDK'
-    website = 'https://android-sdk.payable.lk'
-}
 
 android {
     compileSdkVersion 28
