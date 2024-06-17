@@ -504,33 +504,32 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
                     updateFreshTxtResponse("onTransactionStatus: " + payableResponse.toString());
                 }
             }
-        });
 
-        btnVoid.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (!edtTxnId.getText().toString().isEmpty()) {
-                    Picker.cardTypePicker(MainActivity.this, new Picker.CardTypePickerListener() {
-                        @Override
-                        public void onSelected(int cardType) {
-                            payableClient.requestVoid(edtTxnId.getText().toString(), cardType);
-                        }
-                    });
+            public void onTransactionStatusV2(PayableTxStatusResponseV2 payableResponse) {
+                if (payableResponse.error != null) {
+                    updateFreshTxtResponse("onTransactionStatus: " + payableResponse.status + " txId: " + " error: " + payableResponse.error);
+                } else {
+                    updateFreshTxtResponse("onTransactionStatus: " + payableResponse.toFormattedString());
                 }
             }
         });
 
-        btnStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!edtTxnId.getText().toString().isEmpty()) {
-                    Picker.cardTypePicker(MainActivity.this, new Picker.CardTypePickerListener() {
-                        @Override
-                        public void onSelected(int cardType) {
-                            payableClient.requestTransactionStatus(edtTxnId.getText().toString(), cardType);
-                        }
-                    });
-                }
+        btnVoid.setOnClickListener(v -> {
+            if (!edtTxnId.getText().toString().isEmpty()) {
+                Picker.cardTypePicker(MainActivity.this, cardType -> payableClient.requestVoid(edtTxnId.getText().toString(), cardType));
+            }
+        });
+
+        btnStatus.setOnClickListener(v -> {
+            if (!edtTxnId.getText().toString().isEmpty()) {
+                Picker.cardTypePicker(MainActivity.this, cardType -> payableClient.requestTransactionStatus(edtTxnId.getText().toString(), cardType));
+            }
+        });
+
+        btnStatusV2.setOnClickListener(v -> {
+            if (!edtOrderId.getText().toString().isEmpty()) {
+                Picker.cardTypePicker(MainActivity.this, cardType -> payableClient.requestTransactionStatusV2(edtOrderId.getText().toString(), cardType));
             }
         });
     }
