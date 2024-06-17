@@ -29,7 +29,7 @@ allprojects {
 2. Add the below dependency into your module level `build.gradle` file.
 
 ```gradle
-implementation 'com.github.payable:payable-sdk-dev:3.5.2'
+implementation 'com.github.payable:payable-sdk-dev:3.6.0'
 ```
 
 <hr>
@@ -298,6 +298,7 @@ protected void onDestroy() {
 | `boolean requestProfileList()` | `onProfileList(List<PayableProfile> payableProfiles)`
 | `boolean requestVoid(String txId, int cardType);` | `onVoid(PayableResponse payableResponse)`
 | `boolean requestTransactionStatus(String txId, int cardType)` | `onTransactionStatus(PayableTxStatusResponse payableResponse)`
+| `boolean requestTransactionStatusV2(String orderId, int cardType)` | `onTransactionStatus(PayableTxStatusResponseV2 payableResponse)`
 
 <br/>
 
@@ -333,6 +334,19 @@ int installment;
 String tid;
 String mid;
 String cardNo;
+```
+
+* `PayableTxStatusResponseV2`
+
+```java
+String txKeyId
+String cardHolder
+String ccLast4
+BigDecimal amount
+int cardType
+Date serverTime
+String approvalCode
+int transactionStatus
 ```
 
 <hr/>
