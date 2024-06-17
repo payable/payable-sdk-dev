@@ -9,4 +9,6 @@ public interface PayableEventListener {
     void onVoid(PayableResponse payableResponse);
 
     void onTransactionStatus(PayableTxStatusResponse payableResponse);
+
+    void onTransactionStatusV2(PayableTxStatusResponseV2 payableResponse);
 }

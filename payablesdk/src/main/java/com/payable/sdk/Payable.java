@@ -11,6 +11,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Payable {
+    private static final String TAG = "Payable";
 
     // Status Codes
     public static final int REQUEST_CODE = 3569;
@@ -27,6 +29,7 @@ public class Payable {
     public static final int STATUS_FAILED = 0;
     public static final int INVALID_AMOUNT = 999;
     public static final int APP_NOT_INSTALLED = 888;
+    public static final int INVALID_ORDER_ID = 777;
 
     public static final int METHOD_CARD = 10;
     public static final int METHOD_WALLET = 20;
@@ -46,6 +49,13 @@ public class Payable {
     public static final int CARD_TYPE_CUP = 6;
     public static final int CARD_TYPE_JCB = 7;
     public static final int WALLET_QPLUS = 8;
+
+    public static final int STATUS_OPEN = 1;
+    public static final int STATUS_CLOSE = 2;
+    // public static final int STATUS_VOID = 3 ;
+
+    public static final int STATUS_OPEN_VOID = 11;
+    public static final int STATUS_CLOSE_VOID = 12;
 
     public static final String TX_RECEIVER = "payable.intent.action.TX_RECEIVER";
     public static final String BROADCAST_ACTION = "sdk.intent.action.FROM_PAYMENT_CLIENT";
@@ -121,6 +131,13 @@ public class Payable {
 
                 for (PayableEventListener eventListener : eventListeners) {
                     eventListener.onTransactionStatus(payableResponse);
+                }
+            } else if (intent.hasExtra("onTransactionStatusV2")) {
+
+                PayableTxStatusResponseV2 payableResponse = new Gson().fromJson(intent.getStringExtra("onTransactionStatusV2"), PayableTxStatusResponseV2.class);
+
+                for (PayableEventListener eventListener : eventListeners) {
+                    eventListener.onTransactionStatusV2(payableResponse);
                 }
             }
         }
@@ -345,43 +362,49 @@ public class Payable {
         return intent;
     }
 
-    private boolean validateRequest(String txId, String event) {
-
+    private boolean validateRequest(String id, String event) {
         PayableResponse payableResponse = new PayableResponse();
-        payableResponse.txId = txId;
 
         try {
-
-            long id = Long.parseLong(txId);
-            if (id <= 0) throw new NumberFormatException();
-
             String packageName = "com.cba.payable";
-
-            if (Build.MODEL.contains("WPOS")) {
-                packageName = "com.cba.payable.wpos";
-            }
-
+            if (Build.MODEL.contains("WPOS")) packageName = "com.cba.payable.wpos";
             activity.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-
-        } catch (NumberFormatException ex) {
-
-            payableResponse.status = INVALID_AMOUNT;
-            payableResponse.error = "INVALID_AMOUNT";
-
-            sendEventBroadcastAsPayable(activity, clientSale.getClientId(), event, new Gson().toJson(payableResponse));
-
-            return false;
-
         } catch (PackageManager.NameNotFoundException e) {
-
             payableResponse.status = APP_NOT_INSTALLED;
             payableResponse.error = "APP_NOT_INSTALLED";
-
             sendEventBroadcastAsPayable(activity, clientSale.getClientId(), event, new Gson().toJson(payableResponse));
-
             return false;
         }
 
+        if (event.equals("onTransactionStatusV2")) {
+            try {
+                if (id == null) {
+                    throw new IllegalArgumentException("Field cannot be null");
+                }
+                if (id.isEmpty() || id.length() > 40) {
+                    throw new IllegalArgumentException("Field must be between 1 and 40 characters long");
+                }
+                if (!id.matches("^[a-zA-Z0-9_\\-/]*$")) {
+                    throw new IllegalArgumentException("Field must be alphanumeric and can only contain the characters '_', '-', '/'");
+                }
+            } catch (IllegalArgumentException e) {
+                payableResponse.status = INVALID_ORDER_ID;
+                payableResponse.error = "INVALID_ORDER_ID: " + e.getMessage();
+                sendEventBroadcastAsPayable(activity, clientSale.getClientId(), event, new Gson().toJson(payableResponse));
+                return false;
+            }
+        } else {
+            payableResponse.txId = id;
+            try {
+                long txId = Long.parseLong(id);
+                if (txId <= 0) throw new NumberFormatException();
+            } catch (NumberFormatException ex) {
+                payableResponse.status = INVALID_AMOUNT;
+                payableResponse.error = "INVALID_AMOUNT";
+                sendEventBroadcastAsPayable(activity, clientSale.getClientId(), event, new Gson().toJson(payableResponse));
+                return false;
+            }
+        }
         return true;
     }
 
@@ -430,6 +453,19 @@ public class Payable {
 
         Intent intent = getBroadcastIntent("requestTxStatus");
         intent.putExtra("txId", txId);
+        intent.putExtra("cardType", cardType);
+        sendBroadcast(intent);
+        return true;
+    }
+
+    public boolean requestTransactionStatusV2(String orderId, int cardType) {
+
+        if (!validateRequest(orderId, "onTransactionStatusV2")) {
+            return false;
+        }
+
+        Intent intent = getBroadcastIntent("requestTxStatusV2");
+        intent.putExtra("orderId", orderId);
         intent.putExtra("cardType", cardType);
         sendBroadcast(intent);
         return true;

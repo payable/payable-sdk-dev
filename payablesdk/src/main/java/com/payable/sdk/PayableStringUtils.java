@@ -1,5 +1,10 @@
 package com.payable.sdk;
 
+import static com.payable.sdk.Payable.STATUS_CLOSE;
+import static com.payable.sdk.Payable.STATUS_CLOSE_VOID;
+import static com.payable.sdk.Payable.STATUS_OPEN;
+import static com.payable.sdk.Payable.STATUS_OPEN_VOID;
+
 public class PayableStringUtils {
 
     public static String cardTypeToString(int cardType) {
@@ -15,7 +20,7 @@ public class PayableStringUtils {
         } else if (cardType == Payable.CARD_TYPE_JCB) {
             return "JCB";
         } else {
-            return null;
+            return String.valueOf(cardType);
         }
     }
 
@@ -35,6 +40,21 @@ public class PayableStringUtils {
             return Payable.CARD_TYPE_JCB;
         } else {
             return 0;
+        }
+    }
+
+    public static String statusToString(int status) {
+        switch (status) {
+            case STATUS_OPEN:
+                return "Open";
+            case STATUS_CLOSE:
+                return "Close";
+            case STATUS_OPEN_VOID:
+                return "Open Void";
+            case STATUS_CLOSE_VOID:
+                return "Close Void";
+            default:
+                return String.valueOf(status);
         }
     }
 }

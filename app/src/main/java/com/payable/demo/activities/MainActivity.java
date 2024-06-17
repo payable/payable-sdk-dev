@@ -24,14 +24,15 @@ import com.payable.sdk.PayableProgressListener;
 import com.payable.sdk.PayableResponse;
 import com.payable.sdk.PayableSale;
 import com.payable.sdk.PayableTxStatusResponse;
+import com.payable.sdk.PayableTxStatusResponseV2;
 import com.payable.sdk.Picker;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements PayableListener {
 
-    EditText edtAmount, edtTracking, edtEmail, edtSMS, edtTxnId;
-    Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid, btnStatus;
+    EditText edtAmount, edtTracking, edtEmail, edtSMS, edtTxnId, edtOrderId;
+    Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid, btnStatus, btnStatusV2;
     TextView txtResponse, actTitle;
 
     double saleAmount = 0;
@@ -50,12 +51,14 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         edtEmail = findViewById(R.id.edtEmail);
         edtSMS = findViewById(R.id.edtSMS);
         edtTxnId = findViewById(R.id.edtTxnId);
+        edtOrderId = findViewById(R.id.edtOrderId);
         btnPayCard = findViewById(R.id.btnPayCard);
         btnPayWallet = findViewById(R.id.btnPayWallet);
         btnPay = findViewById(R.id.btnPay);
         btnProfile = findViewById(R.id.btnProfile);
         btnVoid = findViewById(R.id.btnVoid);
         btnStatus = findViewById(R.id.btnStatus);
+        btnStatusV2 = findViewById(R.id.btnStatusV2);
         txtResponse = findViewById(R.id.txtResponse);
         actTitle = findViewById(R.id.actTitle);
         actTitle.setText("Main Activity");
@@ -65,41 +68,25 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         // 2. Set Payable Client
         payableClient = Payable.createPayableClient(this, "1452", "FOOD_COURT", "C6DFA0B215B2CF24EF04794F718A3FC8");
 
-        btnPayCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btnPayCard.setOnClickListener(v -> {
 
-                hideSoftKeyboard(edtAmount);
+            hideSoftKeyboard(edtAmount);
 
-                // 3. Call your method
-                payableSale(Payable.METHOD_CARD);
-            }
+            // 3. Call your method
+            payableSale(Payable.METHOD_CARD);
         });
 
-        btnPayWallet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btnPayWallet.setOnClickListener(v -> {
 
-                hideSoftKeyboard(edtAmount);
+            hideSoftKeyboard(edtAmount);
 
-                // 3. Call your method
-                payableSale(Payable.METHOD_WALLET);
-            }
+            // 3. Call your method
+            payableSale(Payable.METHOD_WALLET);
         });
 
-        btnPay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                payableSale(Payable.METHOD_ANY);
-            }
-        });
+        btnPay.setOnClickListener(v -> payableSale(Payable.METHOD_ANY));
 
-        btnProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                payableClient.requestProfileList();
-            }
-        });
+        btnProfile.setOnClickListener(v -> payableClient.requestProfileList());
 
         /**
          * Advanced Usage (Optional):
@@ -175,36 +162,35 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
                 if (payableResponse.error != null) {
                     updateFreshTxtResponse("onTransactionStatus: " + payableResponse.status + " txId: " + payableResponse.txId + " error: " + payableResponse.error);
                 } else {
-                    updateFreshTxtResponse("onTransactionStatus: " + payableResponse.toString());
+                    updateFreshTxtResponse("onTransactionStatus: " + payableResponse.toFormattedString());
+                }
+            }
+
+            @Override
+            public void onTransactionStatusV2(PayableTxStatusResponseV2 payableResponse) {
+                if (payableResponse.error != null) {
+                    updateFreshTxtResponse("onTransactionStatus: " + payableResponse.status + " txId: " + " error: " + payableResponse.error);
+                } else {
+                    updateFreshTxtResponse("onTransactionStatus: " + payableResponse.toFormattedString());
                 }
             }
         });
 
-        btnVoid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!edtTxnId.getText().toString().isEmpty()) {
-                    Picker.cardTypePicker(MainActivity.this, new Picker.CardTypePickerListener() {
-                        @Override
-                        public void onSelected(int cardType) {
-                            payableClient.requestVoid(edtTxnId.getText().toString(), cardType);
-                        }
-                    });
-                }
+        btnVoid.setOnClickListener(v -> {
+            if (!edtTxnId.getText().toString().isEmpty()) {
+                Picker.cardTypePicker(MainActivity.this, cardType -> payableClient.requestVoid(edtTxnId.getText().toString(), cardType));
             }
         });
 
-        btnStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!edtTxnId.getText().toString().isEmpty()) {
-                    Picker.cardTypePicker(MainActivity.this, new Picker.CardTypePickerListener() {
-                        @Override
-                        public void onSelected(int cardType) {
-                            payableClient.requestTransactionStatus(edtTxnId.getText().toString(), cardType);
-                        }
-                    });
-                }
+        btnStatus.setOnClickListener(v -> {
+            if (!edtTxnId.getText().toString().isEmpty()) {
+                Picker.cardTypePicker(MainActivity.this, cardType -> payableClient.requestTransactionStatus(edtTxnId.getText().toString(), cardType));
+            }
+        });
+
+        btnStatusV2.setOnClickListener(v -> {
+            if (!edtOrderId.getText().toString().isEmpty()) {
+                Picker.cardTypePicker(MainActivity.this, cardType -> payableClient.requestTransactionStatusV2(edtOrderId.getText().toString(), cardType));
             }
         });
     }

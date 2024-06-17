@@ -139,6 +139,25 @@
                 android:textAllCaps="false"
                 android:textColor="#fff" />
 
+            <EditText
+                android:id="@+id/edtOrderId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:hint="Order Tracking ID to Get Status"
+                android:imeOptions="actionDone"/>
+
+            <Button
+                android:id="@+id/btnStatusV2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#0D47A1"
+                android:paddingLeft="20dp"
+                android:text="Transaction Status"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

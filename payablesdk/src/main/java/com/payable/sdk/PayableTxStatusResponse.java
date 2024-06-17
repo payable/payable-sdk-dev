@@ -63,4 +63,23 @@ public class PayableTxStatusResponse extends PayableResponse {
                 ", cardNo='" + cardNo + '\'' +
                 '}';
     }
+
+    public String toFormattedString() {
+        return "\n\n"
+                + "Status: " + status + "\n"
+                + "Transaction ID: " + txId + "\n"
+                + "Error: " + error + "\n"
+                + "Card name: " + cardName + "\n"
+                + "Card last 4 digits: " + ccLast4 + "\n"
+                + "Amount: " + amount + "\n"
+                + "Card type: " + cardType + "\n"
+                + "Time: " + time + "\n"
+                + "Order tracking: " + orderTracking + "\n"
+                + "Transaction type: " + txType + "\n"
+                + "Currency type: " + currencyType + "\n"
+                + "Installment: " + installment + "\n"
+                + "TID: " + tid + "\n"
+                + "MID: " + mid + "\n"
+                + "Card number: " + cardNo + "\n";
+    }
 }
