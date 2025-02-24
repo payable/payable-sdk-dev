@@ -8,8 +8,13 @@ android {
         applicationId "com.payable.demo"
         minSdkVersion 21
         targetSdkVersion 35
-        versionCode 5
-        versionName "4.1.1"
+        versionCode 6
+        versionName "4.1.2"
+    }
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach {
+            outputFileName = "Payable SDK Tester v${versionName}.apk"
+        }
     }
     buildTypes {
         release {
