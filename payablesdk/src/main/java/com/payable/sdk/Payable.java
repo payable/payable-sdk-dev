@@ -303,7 +303,10 @@ public class Payable {
         progressListeners.add(progressListener);
         if (progressListeners.size() == 1) {
             IntentFilter intentFilter = new IntentFilter(Payable.TX_RECEIVER + "_" + clientSale.getClientId());
-            activity.registerReceiver(progressBroadcastReceiver, intentFilter);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                activity.registerReceiver(progressBroadcastReceiver, intentFilter, Context.RECEIVER_EXPORTED);
+            else
+                activity.registerReceiver(progressBroadcastReceiver, intentFilter);
         }
     }
 
@@ -320,7 +323,10 @@ public class Payable {
         eventListeners.add(eventListener);
         if (eventListeners.size() == 1) {
             IntentFilter intentFilter = new IntentFilter(Payable.TX_RECEIVER + "_EVENT_" + clientSale.getClientId());
-            activity.registerReceiver(eventBroadcastReceiver, intentFilter);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                activity.registerReceiver(eventBroadcastReceiver, intentFilter, Context.RECEIVER_EXPORTED);
+            else
+                activity.registerReceiver(eventBroadcastReceiver, intentFilter);
         }
     }
 
