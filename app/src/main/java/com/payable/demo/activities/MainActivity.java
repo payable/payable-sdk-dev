@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -73,7 +72,8 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         actTitle = findViewById(R.id.actTitle);
         actTitle.setText("Main Activity");
 
-        edtAmount.setFilters(AmountInputFilter.getFilter(this, 100000));
+        //edtAmount.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        edtAmount.setFilters(AmountInputFilter.getFilter(100000));
 
         // 2. Set Payable Client
         payableClient = Payable.createPayableClient(this, "1452", "FOOD_COURT", "C6DFA0B215B2CF24EF04794F718A3FC8");
