@@ -203,6 +203,18 @@ Payable.TXN_MANUAL : 2;
 Payable.TXN_NFC : 3;
 ```
 
+##### * Card Types
+
+```java
+VISA = 1;
+AMEX = 2;
+MASTER = 3;
+DINERS = 4;
+MAESTRO = 5;
+CUP = 6;
+JCB = 7;
+```
+
 <hr/>
 
 ### Advanced Usage
