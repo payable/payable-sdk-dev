@@ -29,7 +29,7 @@ allprojects {
 2. Add the below dependency into your module level `build.gradle` file.
 
 ```gradle
-implementation 'com.github.payable:payable-sdk-dev:3.6.0'
+implementation 'com.github.payable:payable-sdk-dev:v3.6.1'
 ```
 
 <hr>
@@ -49,22 +49,23 @@ import com.payable.sdk.PayableSale;
 
 ```java
 public class MainActivity extends AppCompatActivity implements PayableListener {
-    
+
     Payable payableClient;
-    
+
+    // Return false to abort the payment before the PAYable app is launched.
     @Override
-    boolean onPaymentStart(PayableSale payableSale){
+    public boolean onPaymentStart(PayableSale payableSale) {
         return true;
     }
-    
+
     @Override
-    void onPaymentSuccess(PayableSale payableSale){
-        
+    public void onPaymentSuccess(PayableSale payableSale) {
+
     }
-    
+
     @Override
-    void onPaymentFailure(PayableSale payableSale){
-        
+    public void onPaymentFailure(PayableSale payableSale) {
+
     }
 }
 ```
@@ -102,7 +103,7 @@ PayableSale payableSale = new PayableSale(sale_amount: Double, payment_method: I
 ```
 
 * Optional parameters
-ReadMe
+
 ```java
 payableSale.setReceiptEmail("test@payable.lk");
 payableSale.setReceiptSMS("0110000000");
@@ -167,32 +168,39 @@ payableClient.startPayment(500.50, Payable.METHOD_ANY, "{ \"ORDER_TRACKING\" : \
 ```
 -->
 
-##### * Return Payable Object
+##### * Return PayableSale Object
+
+The `PayableSale` passed to `onPaymentSuccess` / `onPaymentFailure` carries the result.
 
 ```java
-payable.getStatusCode();
-payable.getSaleAmount();
-payable.getCcLast4();
-payable.getCardType();
-payable.getTxId();
-payable.getTerminalId();
-payable.getMid();
-payable.getIsEmv();
-payable.getTxnStatus();
-payable.getReceiptSMS();
-payable.getReceiptEmail();
-payable.getOrderTracking();
+payableSale.getStatusCode();
+payableSale.getSaleAmount();
+payableSale.getCcLast4();
+payableSale.getCardNo();
+payableSale.getCardType();
+payableSale.getTxId();
+payableSale.getTerminalId();
+payableSale.getMid();
+payableSale.getTxnType();      // Payable.TXN_SWIPE / TXN_EMV / TXN_MANUAL / TXN_NFC
+payableSale.getTxnTypeName();  // the above as a readable string
+payableSale.getTxnStatus();
+payableSale.getPaymentMethod();
+payableSale.getReceiptSMS();
+payableSale.getReceiptEmail();
+payableSale.getOrderTracking();
+payableSale.getMessage();      // error description on failure
 ```
 
 ##### * Return Status Codes
 
-```javaReadMe
-Payable.PAYABLE_REQUEST_CODE : 3569;
-Payable.PAYABLE_STATUS_SUCCESS : 222;
-Payable.PAYABLE_STATUS_NOT_LOGIN : 555;
-Payable.PAYABLE_STATUS_FAILED : 0;
-Payable.PAYABLE_INVALID_AMOUNT : 999;
-Payable.PAYABLE_APP_NOT_INSTALLED : 888;
+```java
+Payable.REQUEST_CODE : 3569;
+Payable.STATUS_SUCCESS : 222;
+Payable.STATUS_NOT_LOGIN : 555;
+Payable.STATUS_FAILED : 0;
+Payable.INVALID_AMOUNT : 999;
+Payable.APP_NOT_INSTALLED : 888;
+Payable.INVALID_ORDER_ID : 777;
 ```
 
 ##### * Card Actions
@@ -238,7 +246,7 @@ Explanation for `PayableProgressListener` interface.
 onCardInteraction(int action, PayableSale payableSale)
 ```
 
-* This method will be called in the background when the terminal listens to any card interactions such as ENV, SWIPE, and NFC, this will respond with your sale values and interacted action as `Payable.EMV, Payable.SWIPE, Payable.NFC` and -1 for any error on card interaction. You can get the error description using `payableSale.getMessage()` method.
+* This method will be called in the background when the terminal listens to any card interactions such as ENV, SWIPE, and NFC, this will respond with your sale values and interacted action as `Payable.TXN_EMV, Payable.TXN_SWIPE, Payable.TXN_NFC` and -1 for any error on card interaction. You can get the error description using `payableSale.getMessage()` method.
 
 ```java
 onPaymentAccepted(PayableSale payableSale)
@@ -271,12 +279,22 @@ payableClient.registerEventListener(new PayableEventListener() {
 
     @Override
     public void onProfileList(List<PayableProfile> payableProfiles) {
-        
+
     }
 
     @Override
     public void onVoid(PayableResponse payableResponse) {
-        
+
+    }
+
+    @Override
+    public void onTransactionStatus(PayableTxStatusResponse payableResponse) {
+
+    }
+
+    @Override
+    public void onTransactionStatusV2(PayableTxStatusResponseV2 payableResponse) {
+
     }
 });
 ```
@@ -298,7 +316,7 @@ protected void onDestroy() {
 | `boolean requestProfileList()` | `onProfileList(List<PayableProfile> payableProfiles)`
 | `boolean requestVoid(String txId, int cardType);` | `onVoid(PayableResponse payableResponse)`
 | `boolean requestTransactionStatus(String txId, int cardType)` | `onTransactionStatus(PayableTxStatusResponse payableResponse)`
-| `boolean requestTransactionStatusV2(String orderId, int cardType)` | `onTransactionStatus(PayableTxStatusResponseV2 payableResponse)`
+| `boolean requestTransactionStatusV2(String orderId, int cardType)` | `onTransactionStatusV2(PayableTxStatusResponseV2 payableResponse)`
 
 <br/>
 
@@ -311,7 +329,7 @@ String currency;
 Integer installment;
 ```
 
-* `PAYableResponse`
+* `PayableResponse`
 
 ```java
 int status;
@@ -348,6 +366,12 @@ Date serverTime
 String approvalCode
 int transactionStatus
 ```
+
+> `PayableTxStatusResponse` and `PayableTxStatusResponseV2` both extend `PayableResponse`, so they also
+> carry `status`, `txId` and `error`. On a failed request (`APP_NOT_INSTALLED`, `INVALID_AMOUNT`,
+> `INVALID_ORDER_ID`) the request method returns `false` and the callback still fires with `status` and
+> `error` set. For `requestTransactionStatusV2`, `orderId` must be 1-40 characters and may contain only
+> letters, digits, `_`, `-` and `/`.
 
 <hr/>
 
@@ -386,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         actTitle = findViewById(R.id.actTitle);
         actTitle.setText("Main Activity");
 
-        edtAmount.setFilters(AmountInputFilter.getFilter(this, 100000));
+        edtAmount.setFilters(AmountInputFilter.getFilter(100000));
 
         // 2. Set Payable Client
         payableClient = Payable.createPayableClient(this, "1452", "FOOD_COURT", "C6DFA0B215B2CF24EF04794F718A3FC8");

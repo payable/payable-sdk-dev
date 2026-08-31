@@ -1,6 +1,24 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
+def signingProps = new Properties()
+def signingPropsFile = rootProject.file('local.properties')
+if (signingPropsFile.exists()) {
+    signingPropsFile.withInputStream { signingProps.load(it) }
+}
+
+def signingValue = { String key, String env ->
+    signingProps.getProperty(key) ?: System.getenv(env)
+}
+
+def releaseStoreFile = signingValue('payable.storeFile', 'PAYABLE_STORE_FILE')
+def releaseStorePassword = signingValue('payable.storePassword', 'PAYABLE_STORE_PASSWORD')
+def releaseKeyAlias = signingValue('payable.keyAlias', 'PAYABLE_KEY_ALIAS')
+def releaseKeyPassword = signingValue('payable.keyPassword', 'PAYABLE_KEY_PASSWORD')
+
+def hasReleaseSigning = releaseStoreFile != null && rootProject.file(releaseStoreFile).exists() &&
+        releaseStorePassword != null && releaseKeyAlias != null && releaseKeyPassword != null
+
 android {
     compileSdk 35
     namespace 'com.payable.demo'
@@ -9,16 +27,34 @@ android {
         minSdkVersion 21
         targetSdkVersion 35
         versionCode 6
-        versionName "4.1.2"
+        versionName "4.1.3"
     }
     applicationVariants.configureEach { variant ->
         variant.outputs.configureEach {
             outputFileName = "Payable SDK Tester v${versionName}.apk"
         }
     }
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            release {
+                storeFile rootProject.file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
+            if (hasReleaseSigning) signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            signingConfig hasReleaseSigning ? signingConfigs.release : signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

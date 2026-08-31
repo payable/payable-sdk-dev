@@ -44,3 +44,7 @@ captures/
 .idea/caches
 
 !**/release/*
+# Signing keystores and credentials — never commit
+*.jks
+*.keystore
+keystore.properties
