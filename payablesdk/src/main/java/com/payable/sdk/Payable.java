@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.util.Log;
 
@@ -59,6 +60,15 @@ public class Payable {
 
     public static final String TX_RECEIVER = "payable.intent.action.TX_RECEIVER";
     public static final String BROADCAST_ACTION = "sdk.intent.action.FROM_PAYMENT_CLIENT";
+
+    /**
+     * Installed package name (applicationId) of the PAYable POS app. Note this differs from the
+     * POS app's namespace, which is "com.cba.payable" -- that is only its code/R package.
+     */
+    private static final String POS_PACKAGE = "com.cba.payable.wpos";
+
+    /** Receiver the POS app declares for {@link #BROADCAST_ACTION}; used only as a fallback. */
+    private static final String POS_RECEIVER = "com.mpos.client.PaymentClientBroadcastReceiver";
 
     private Activity activity;
     private static Payable payable;
@@ -351,14 +361,35 @@ public class Payable {
 
     public void sendBroadcast(Intent intent) {
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+        // Always target the receiver explicitly: implicit broadcasts are not delivered to
+        // manifest-declared receivers from API 26 onwards.
+        ComponentName component = resolveReceiver(intent);
 
-            if (!Build.MODEL.contains("WPOS")) {
-                intent.setComponent(new ComponentName("com.cba.payable", "com.mpos.client.PaymentClientBroadcastReceiver"));
+        if (component == null) {
+            Log.e(TAG, "POS app receiver not found, broadcast not sent");
+            return;
+        }
+
+        intent.setComponent(component);
+        activity.sendBroadcast(intent);
+    }
+
+    private ComponentName resolveReceiver(Intent intent) {
+
+        for (ResolveInfo info : activity.getPackageManager().queryBroadcastReceivers(intent, 0)) {
+            if (info.activityInfo != null && POS_PACKAGE.equals(info.activityInfo.packageName)) {
+                return new ComponentName(info.activityInfo.packageName, info.activityInfo.name);
             }
         }
 
-        activity.sendBroadcast(intent);
+        // Some ROMs return nothing from queryBroadcastReceivers; fall back to the known receiver
+        // if the POS app is installed at all.
+        try {
+            activity.getPackageManager().getApplicationInfo(POS_PACKAGE, PackageManager.GET_META_DATA);
+            return new ComponentName(POS_PACKAGE, POS_RECEIVER);
+        } catch (PackageManager.NameNotFoundException ex) {
+            return null;
+        }
     }
 
     private Intent getBroadcastIntent(String sdkAction) {
@@ -372,9 +403,7 @@ public class Payable {
         PayableResponse payableResponse = new PayableResponse();
 
         try {
-            String packageName = "com.cba.payable";
-            if (Build.MODEL.contains("WPOS")) packageName = "com.cba.payable.wpos";
-            activity.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+            activity.getPackageManager().getApplicationInfo(POS_PACKAGE, PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             payableResponse.status = APP_NOT_INSTALLED;
             payableResponse.error = "APP_NOT_INSTALLED";

@@ -1,5 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <queries>
-        <package android:name="com.cba.payable"/>
+        <!-- Installed package name of the PAYable POS app. Note this is the app's
+             applicationId, not its namespace (which is com.cba.payable). Required for
+             getApplicationInfo/queryBroadcastReceivers to see it on API 30+. -->
+        <package android:name="com.cba.payable.wpos" />
+        <!-- Defensive: keeps receiver resolution working if the POS applicationId changes. -->
+        <intent>
+            <action android:name="sdk.intent.action.FROM_PAYMENT_CLIENT" />
+        </intent>
     </queries>
 </manifest>
