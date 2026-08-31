@@ -6,9 +6,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,8 +42,9 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
     EditText edtAmount, edtTracking, edtEmail, edtSMS, edtTxnId, edtOrderId;
     Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid, btnStatus, btnStatusV2,
-            btnSettlementHistory, btnLatestReversal, btnForceReversal;
+            btnSettlementHistory, btnLatestReversal, btnForceReversal, btnClearResponse;
     TextView txtResponse, actTitle;
+    ScrollView scrollView;
 
     double saleAmount = 0;
     String selectedProfile;
@@ -77,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         btnSettlementHistory = findViewById(R.id.btnSettlementHistory);
         btnLatestReversal = findViewById(R.id.btnLatestReversal);
         btnForceReversal = findViewById(R.id.btnForceReversal);
+        btnClearResponse = findViewById(R.id.btnClearResponse);
+        scrollView = findViewById(R.id.scrollView);
         txtResponse = findViewById(R.id.txtResponse);
         actTitle = findViewById(R.id.actTitle);
         actTitle.setText("Main Activity");
@@ -263,6 +268,8 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
             }
         });
 
+        btnClearResponse.setOnClickListener(v -> txtResponse.setText(""));
+
         btnSettlementHistory.setOnClickListener(v -> payableClient.requestSettlementHistory(0, 20));
 
         btnLatestReversal.setOnClickListener(v -> payableClient.requestLatestReversalRecord());
@@ -381,6 +388,9 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
     private void updateTxtResponse(String message) {
         txtResponse.setText(txtResponse.getText().toString() + "\n" + message);
+
+        // Keep the response in view - it sits below every button on a long screen.
+        scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }
 
     private void updateFreshTxtResponse(String message) {

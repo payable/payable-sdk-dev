@@ -13,6 +13,11 @@ Android SDK - [android-sdk.payable.lk](https://android-sdk.payable.lk) | [Create
 
 * Request and install **Sandbox** PAYable APP - Testing purpose
 
+> Payments (`startPayment`) work against any PAYable POS app, but every `request*` method and the event
+> callbacks below talk to **Payable Pro** (`com.cba.payable.wpos`) - it is the only app that declares the
+> SDK's broadcast receiver. With any other PAYable app installed, those requests return `false` and the
+> callback fires with `APP_NOT_INSTALLED (888)`.
+
 ### Initialization
 
 1. Add the below repository into your project level `settings.gradle` or `build.gradle` file.
@@ -43,6 +48,22 @@ import com.payable.sdk.Payable;
 import com.payable.sdk.PayableListener;
 import com.payable.sdk.PayableProgressListener;
 import com.payable.sdk.PayableSale;
+```
+
+* The advanced usage below additionally needs
+
+```java
+import com.payable.sdk.AmountInputFilter;
+import com.payable.sdk.PayableEventListener;
+import com.payable.sdk.PayableForceReversalResponse;
+import com.payable.sdk.PayableProfile;
+import com.payable.sdk.PayableResponse;
+import com.payable.sdk.PayableReversalRecordResponse;
+import com.payable.sdk.PayableSettlement;
+import com.payable.sdk.PayableSettlementHistoryResponse;
+import com.payable.sdk.PayableTxStatusResponse;
+import com.payable.sdk.PayableTxStatusResponseV2;
+import com.payable.sdk.Picker;
 ```
 
 <b>2.</b> Implement `PayableListener` and declare PAYable client in your class.
@@ -203,6 +224,10 @@ Payable.APP_NOT_INSTALLED : 888;
 Payable.INVALID_ORDER_ID : 777;
 ```
 
+> The sale amount must be **1 or more**. `startPayment` rejects anything below that without launching
+> the PAYable app: `onPaymentFailure` fires with `INVALID_AMOUNT (999)`. Returning `false` from
+> `onPaymentStart` aborts the sale the same way, without a callback.
+
 ##### * Card Actions
 
 ```java
@@ -211,6 +236,26 @@ Payable.TXN_EMV : 1;
 Payable.TXN_MANUAL : 2;
 Payable.TXN_NFC : 3;
 ```
+
+##### * Card Types
+
+The `cardType` parameter of `requestVoid` and `requestTransactionStatus[V2]` takes one of these.
+
+```java
+Payable.CARD_TYPE_OTHER : 0;
+Payable.CARD_TYPE_VISA : 1;
+Payable.CARD_TYPE_AMEX : 2;
+Payable.CARD_TYPE_MASTER : 3;
+Payable.CARD_TYPE_DINERS : 4;
+Payable.CARD_TYPE_MAESTRO : 5;
+Payable.CARD_TYPE_CUP : 6;
+Payable.CARD_TYPE_JCB : 7;
+Payable.WALLET_QPLUS : 8;
+```
+
+* `Picker.cardTypePicker(context, cardType -> { ... })` shows a ready-made dialog for the common ones
+  (VISA / MASTER / AMEX / CUP / JCB), and `Picker.profilePicker(context, payableProfiles, listener)`
+  does the same for the profiles returned by `requestProfileList()`.
 
 <hr/>
 
@@ -332,10 +377,10 @@ protected void onDestroy() {
 | Method | Callback
 |--|--|
 | `boolean requestProfileList()` | `onProfileList(List<PayableProfile> payableProfiles)`
-| `boolean requestVoid(String txId, int cardType);` | `onVoid(PayableResponse payableResponse)`
+| `boolean requestVoid(String txId, int cardType)` | `onVoid(PayableResponse payableResponse)`
 | `boolean requestTransactionStatus(String txId, int cardType)` | `onTransactionStatus(PayableTxStatusResponse payableResponse)`
 | `boolean requestTransactionStatusV2(String orderId, int cardType)` | `onTransactionStatusV2(PayableTxStatusResponseV2 payableResponse)`
-| `boolean requestSettlementHistory(int pageId, int pageSize)`<br/>`boolean requestSettlementHistory(PayableSettlementFilter filter)` | `onSettlementHistory(PayableSettlementHistoryResponse payableResponse)`
+| `boolean requestSettlementHistory(PayableSettlementFilter filter)`<br/>`void requestSettlementHistory(int pageId, int pageSize)` | `onSettlementHistory(PayableSettlementHistoryResponse payableResponse)`
 | `boolean requestLatestReversalRecord()` | `onLatestReversalRecord(PayableReversalRecordResponse payableResponse)`
 | `boolean requestForceReversal(String reversalId)` | `onForceReversal(PayableForceReversalResponse payableResponse)`
 
@@ -387,6 +432,9 @@ Date serverTime
 String approvalCode
 int transactionStatus
 ```
+
+> Unlike the other models, these fields are `private` and have no getters - read them with
+> `toFormattedString()` or `toString()`. The inherited `status`, `txId` and `error` are public as usual.
 
 * `PayableSettlementFilter`
 

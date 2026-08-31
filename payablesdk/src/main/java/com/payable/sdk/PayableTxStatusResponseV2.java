@@ -66,7 +66,7 @@ public class PayableTxStatusResponseV2 extends PayableResponse {
                 + "Card last 4 digits: " + ccLast4 + "\n\n"
                 + "Amount: " + amount + "\n\n"
                 + "Card type: " + cardTypeToString(cardType) + "\n\n"
-                + "Server time: " + serverTime.toLocaleString() + "\n\n"
+                + "Server time: " + (serverTime == null ? null : serverTime.toLocaleString()) + "\n\n"
                 + "Approval code: " + approvalCode + "\n\n"
                 + "Transaction status: " + statusToString(transactionStatus) + "\n\n";
     }

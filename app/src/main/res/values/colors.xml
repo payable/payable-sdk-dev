@@ -3,4 +3,11 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="payable_blue">#0D47A1</color>
+    <color name="payable_blue_disabled">#9FB2CE</color>
+    <color name="button_text">#FFFFFF</color>
+    <color name="section_header">#0D47A1</color>
+    <color name="response_background">#F2F4F7</color>
+    <color name="response_text">#212121</color>
 </resources>

@@ -2,12 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/root"
     tools:context=".activities.MainActivity">
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -15,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="30dp">
+            android:padding="20dp">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -30,6 +31,10 @@
                 android:layout_marginBottom="15dp"
                 android:text="Extended Activity" />
 
+            <TextView
+                style="@style/SectionHeader"
+                android:layout_marginTop="0dp"
+                android:text="Payment" />
 
             <EditText
                 android:id="@+id/edtAmount"
@@ -61,152 +66,127 @@
 
             <Button
                 android:id="@+id/btnPay"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="#0D47A1"
+                style="@style/PayableButton"
                 android:drawableLeft="@drawable/ic_credit_card_black_24dp"
                 android:drawablePadding="-20dp"
-                android:paddingLeft="20dp"
-                android:text="Pay"
-                android:textAllCaps="false"
-                android:textColor="#fff" />
+                android:text="Pay" />
 
             <Button
                 android:id="@+id/btnPayCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="#0D47A1"
+                style="@style/PayableButton"
                 android:drawableLeft="@drawable/ic_credit_card_black_24dp"
                 android:drawablePadding="-20dp"
-                android:paddingLeft="20dp"
-                android:text="Charge Card"
-                android:textAllCaps="false"
-                android:textColor="#fff" />
+                android:text="Charge Card" />
 
             <Button
                 android:id="@+id/btnPayWallet"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="#0D47A1"
+                style="@style/PayableButton"
                 android:drawableLeft="@drawable/ic_credit_card_black_24dp"
                 android:drawablePadding="-20dp"
-                android:paddingLeft="20dp"
-                android:text="Charge Wallet"
-                android:textAllCaps="false"
-                android:textColor="#fff" />
+                android:text="Charge Wallet" />
 
             <Button
                 android:id="@+id/btnProfile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="#0D47A1"
-                android:paddingLeft="20dp"
-                android:text="Selected Profile: Default"
-                android:textAllCaps="false"
-                android:textColor="#fff" />
+                style="@style/PayableButton"
+                android:text="Selected Profile: Default" />
+
+            <TextView
+                style="@style/SectionHeader"
+                android:text="Transaction" />
 
             <EditText
                 android:id="@+id/edtTxnId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:hint="Transaction ID to Void/Status"
                 android:imeOptions="actionDone"
                 android:inputType="phone" />
 
             <Button
                 android:id="@+id/btnVoid"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="#0D47A1"
-                android:paddingLeft="20dp"
-                android:text="Void Transaction"
-                android:textAllCaps="false"
-                android:textColor="#fff" />
+                style="@style/PayableButton"
+                android:text="Void Transaction" />
 
             <Button
                 android:id="@+id/btnStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="#0D47A1"
-                android:paddingLeft="20dp"
-                android:text="Transaction Status"
-                android:textAllCaps="false"
-                android:textColor="#fff" />
+                style="@style/PayableButton"
+                android:text="Transaction Status (Txn ID)" />
 
             <EditText
                 android:id="@+id/edtOrderId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="12dp"
                 android:hint="Order Tracking ID to Get Status"
-                android:imeOptions="actionDone"/>
+                android:imeOptions="actionDone" />
 
             <Button
                 android:id="@+id/btnStatusV2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="#0D47A1"
-                android:paddingLeft="20dp"
-                android:text="Transaction Status"
-                android:textAllCaps="false"
-                android:textColor="#fff" />
+                style="@style/PayableButton"
+                android:text="Transaction Status (Order ID)" />
+
+            <TextView
+                style="@style/SectionHeader"
+                android:text="Settlement &amp; Reversal" />
 
             <Button
                 android:id="@+id/btnSettlementHistory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="#0D47A1"
-                android:paddingLeft="20dp"
-                android:text="Settlement History"
-                android:textAllCaps="false"
-                android:textColor="#fff" />
+                style="@style/PayableButton"
+                android:text="Settlement History" />
 
             <Button
                 android:id="@+id/btnLatestReversal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="#0D47A1"
-                android:paddingLeft="20dp"
-                android:text="Latest Reversal Record"
-                android:textAllCaps="false"
-                android:textColor="#fff" />
+                style="@style/PayableButton"
+                android:text="Latest Reversal Record" />
 
             <Button
                 android:id="@+id/btnForceReversal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="#0D47A1"
+                style="@style/PayableButton"
                 android:enabled="false"
-                android:paddingLeft="20dp"
-                android:text="Force Reversal"
-                android:textAllCaps="false"
-                android:textColor="#fff" />
+                android:text="Force Reversal" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:hint="Response"
-                android:textStyle="bold" />
+                android:layout_marginTop="24dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/SectionHeader"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_weight="1"
+                    android:text="Response" />
+
+                <Button
+                    android:id="@+id/btnClearResponse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:padding="8dp"
+                    android:text="Clear"
+                    android:textAllCaps="false"
+                    android:textColor="@color/payable_blue"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txtResponse"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:background="@color/response_background"
+                android:fontFamily="monospace"
+                android:padding="12dp"
+                android:textColor="@color/response_text"
+                android:textIsSelectable="true"
+                android:textSize="12sp" />
 
         </LinearLayout>
-
 
     </ScrollView>
 

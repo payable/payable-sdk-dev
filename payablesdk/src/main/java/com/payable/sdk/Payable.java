@@ -282,6 +282,9 @@ public class Payable {
                 payableListener.onPaymentFailure(clientSale);
             }
 
+        } else {
+            // The caller aborted the sale from onPaymentStart, so nothing will dismiss the dialog.
+            waitDialog.dismiss();
         }
     }
 
