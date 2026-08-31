@@ -11,4 +11,13 @@ public interface PayableEventListener {
     void onTransactionStatus(PayableTxStatusResponse payableResponse);
 
     void onTransactionStatusV2(PayableTxStatusResponseV2 payableResponse);
+
+    default void onSettlementHistory(PayableSettlementHistoryResponse payableResponse) {
+    }
+
+    default void onLatestReversalRecord(PayableReversalRecordResponse payableResponse) {
+    }
+
+    default void onForceReversal(PayableForceReversalResponse payableResponse) {
+    }
 }

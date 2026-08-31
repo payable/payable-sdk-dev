@@ -296,8 +296,26 @@ payableClient.registerEventListener(new PayableEventListener() {
     public void onTransactionStatusV2(PayableTxStatusResponseV2 payableResponse) {
 
     }
+
+    @Override
+    public void onSettlementHistory(PayableSettlementHistoryResponse payableResponse) {
+
+    }
+
+    @Override
+    public void onLatestReversalRecord(PayableReversalRecordResponse payableResponse) {
+
+    }
+
+    @Override
+    public void onForceReversal(PayableForceReversalResponse payableResponse) {
+
+    }
 });
 ```
+
+> `onSettlementHistory`, `onLatestReversalRecord` and `onForceReversal` are optional - they have
+> default no-op implementations, so you only override the ones you use.
 
 ##### Unregister event listener
 
@@ -317,6 +335,9 @@ protected void onDestroy() {
 | `boolean requestVoid(String txId, int cardType);` | `onVoid(PayableResponse payableResponse)`
 | `boolean requestTransactionStatus(String txId, int cardType)` | `onTransactionStatus(PayableTxStatusResponse payableResponse)`
 | `boolean requestTransactionStatusV2(String orderId, int cardType)` | `onTransactionStatusV2(PayableTxStatusResponseV2 payableResponse)`
+| `boolean requestSettlementHistory(int pageId, int pageSize)`<br/>`boolean requestSettlementHistory(PayableSettlementFilter filter)` | `onSettlementHistory(PayableSettlementHistoryResponse payableResponse)`
+| `boolean requestLatestReversalRecord()` | `onLatestReversalRecord(PayableReversalRecordResponse payableResponse)`
+| `boolean requestForceReversal(String reversalId)` | `onForceReversal(PayableForceReversalResponse payableResponse)`
 
 <br/>
 
@@ -367,11 +388,99 @@ String approvalCode
 int transactionStatus
 ```
 
-> `PayableTxStatusResponse` and `PayableTxStatusResponseV2` both extend `PayableResponse`, so they also
-> carry `status`, `txId` and `error`. On a failed request (`APP_NOT_INSTALLED`, `INVALID_AMOUNT`,
-> `INVALID_ORDER_ID`) the request method returns `false` and the callback still fires with `status` and
-> `error` set. For `requestTransactionStatusV2`, `orderId` must be 1-40 characters and may contain only
-> letters, digits, `_`, `-` and `/`.
+* `PayableSettlementFilter`
+
+Every field is optional. `pageId` is zero based; `pageSize` defaults to 20 on the POS app when left at 0.
+
+```java
+int pageId;
+int pageSize;
+Long profileId;
+String startDate;
+String endDate;
+String tid;
+Integer currency;
+Integer installment;
+Integer isDcc;
+Integer batchNo;
+```
+
+* `PayableSettlementHistoryResponse`
+
+```java
+List<PayableSettlement> settlements;
+int pageId;
+boolean hasMore;          // true when there is at least one more page to request
+```
+
+* `PayableSettlement`
+
+```java
+String id;
+long profileId;
+int batchNo;
+String tid;
+String mid;
+int currency;
+int installment;
+int isDcc;
+int txCount;
+double totalAmount;
+String startDate;
+String endDate;
+String settledDate;
+String printedDate;
+```
+
+* `PayableReversalRecordResponse`
+
+```java
+String reversalId;        // pass this to requestForceReversal()
+String amount;
+int currency;
+String dateTime;
+String merchantId;
+String terminalId;
+int txnType;
+String payStatus;
+String last4;
+String cardType;
+String txType;
+String batchNo;
+String invoiceNo;
+String bin;
+String appName;
+String aid;
+String rrn;
+String traceNo;
+String refNum;
+```
+
+* `PayableForceReversalResponse`
+
+```java
+String reversalHistoryId;
+String reversalStatus;    // isCompleted() is true when this is REVERSAL_COMPLETED
+String nacResponseCode;
+String retrievalRefNo;
+String authIdResponseCode;
+String ccLast4;
+String amount;
+int currency;
+String invoiceNo;
+```
+
+> **Force reversal is a two call flow.** Call `requestLatestReversalRecord()` first - it returns the
+> most recent timed out reversal that has not been retried yet (`reversalId` is null when there is
+> nothing pending) - then pass its `reversalId` to `requestForceReversal(String)`. The reversal only
+> succeeded when `isCompleted()` returns true; a completed API call with any other `reversalStatus`
+> comes back with `status` failed and `error` set to that status.
+
+> Every response type extends `PayableResponse`, so they all carry `status`, `txId` and `error`. On a
+> failed request (`APP_NOT_INSTALLED`, `INVALID_AMOUNT`, `INVALID_ORDER_ID`) the request method returns
+> `false` and the callback still fires with `status` and `error` set. For `requestTransactionStatusV2`,
+> `orderId` must be 1-40 characters and may contain only letters, digits, `_`, `-` and `/`;
+> `requestForceReversal` applies the same rule to `reversalId` with a 64 character limit.
 
 <hr/>
 
@@ -380,12 +489,14 @@ int transactionStatus
 ```java
 public class MainActivity extends AppCompatActivity implements PayableListener {
 
-    EditText edtAmount, edtTracking, edtEmail, edtSMS, edtTxnId;
-    Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid, btnStatus;
+    EditText edtAmount, edtTracking, edtEmail, edtSMS, edtTxnId, edtOrderId;
+    Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid, btnStatus, btnStatusV2,
+            btnSettlementHistory, btnLatestReversal, btnForceReversal;
     TextView txtResponse, actTitle;
 
     double saleAmount = 0;
     String selectedProfile;
+    String pendingReversalId;
 
     // 1. Declare Payable Client
     Payable payableClient;
@@ -400,12 +511,17 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         edtEmail = findViewById(R.id.edtEmail);
         edtSMS = findViewById(R.id.edtSMS);
         edtTxnId = findViewById(R.id.edtTxnId);
+        edtOrderId = findViewById(R.id.edtOrderId);
         btnPayCard = findViewById(R.id.btnPayCard);
         btnPayWallet = findViewById(R.id.btnPayWallet);
         btnPay = findViewById(R.id.btnPay);
         btnProfile = findViewById(R.id.btnProfile);
         btnVoid = findViewById(R.id.btnVoid);
         btnStatus = findViewById(R.id.btnStatus);
+        btnStatusV2 = findViewById(R.id.btnStatusV2);
+        btnSettlementHistory = findViewById(R.id.btnSettlementHistory);
+        btnLatestReversal = findViewById(R.id.btnLatestReversal);
+        btnForceReversal = findViewById(R.id.btnForceReversal);
         txtResponse = findViewById(R.id.txtResponse);
         actTitle = findViewById(R.id.actTitle);
         actTitle.setText("Main Activity");
@@ -537,6 +653,56 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
                     updateFreshTxtResponse("onTransactionStatus: " + payableResponse.toFormattedString());
                 }
             }
+
+            @Override
+            public void onSettlementHistory(PayableSettlementHistoryResponse payableResponse) {
+
+                if (payableResponse.error != null) {
+                    updateFreshTxtResponse("onSettlementHistory: " + payableResponse.status + " error: " + payableResponse.error);
+                    return;
+                }
+
+                List<PayableSettlement> settlements = payableResponse.settlements;
+
+                if (settlements == null || settlements.isEmpty()) {
+                    updateFreshTxtResponse("onSettlementHistory: no settlements");
+                    return;
+                }
+
+                updateFreshTxtResponse("onSettlementHistory: " + settlements.size() + " settlement(s), has more: " + payableResponse.hasMore);
+
+                for (PayableSettlement settlement : settlements) {
+                    updateTxtResponse(settlement.toFormattedString());
+                }
+            }
+
+            @Override
+            public void onLatestReversalRecord(PayableReversalRecordResponse payableResponse) {
+
+                pendingReversalId = payableResponse.reversalId;
+                btnForceReversal.setEnabled(pendingReversalId != null && !pendingReversalId.isEmpty());
+
+                if (payableResponse.error != null) {
+                    updateFreshTxtResponse("onLatestReversalRecord: " + payableResponse.status + " error: " + payableResponse.error);
+                } else if (pendingReversalId == null) {
+                    updateFreshTxtResponse("onLatestReversalRecord: no pending reversal");
+                } else {
+                    updateFreshTxtResponse("onLatestReversalRecord: " + payableResponse.toFormattedString());
+                }
+            }
+
+            @Override
+            public void onForceReversal(PayableForceReversalResponse payableResponse) {
+
+                pendingReversalId = null;
+                btnForceReversal.setEnabled(false);
+
+                if (payableResponse.error != null) {
+                    updateFreshTxtResponse("onForceReversal: " + payableResponse.status + " error: " + payableResponse.error);
+                } else {
+                    updateFreshTxtResponse("onForceReversal: " + payableResponse.toFormattedString());
+                }
+            }
         });
 
         btnVoid.setOnClickListener(v -> {
@@ -555,6 +721,25 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
             if (!edtOrderId.getText().toString().isEmpty()) {
                 Picker.cardTypePicker(MainActivity.this, cardType -> payableClient.requestTransactionStatusV2(edtOrderId.getText().toString(), cardType));
             }
+        });
+
+        btnSettlementHistory.setOnClickListener(v -> payableClient.requestSettlementHistory(0, 20));
+
+        btnLatestReversal.setOnClickListener(v -> payableClient.requestLatestReversalRecord());
+
+        btnForceReversal.setOnClickListener(v -> {
+
+            if (pendingReversalId == null || pendingReversalId.isEmpty()) {
+                Toast.makeText(this, "Fetch the latest reversal record first", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            new AlertDialog.Builder(MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
+                    .setTitle("Force Reversal")
+                    .setMessage("Retry the reversal of record " + pendingReversalId + "?")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Reverse", (dialog, which) -> payableClient.requestForceReversal(pendingReversalId))
+                    .show();
         });
     }
 

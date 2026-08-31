@@ -159,6 +159,40 @@
                 android:textAllCaps="false"
                 android:textColor="#fff" />
 
+            <Button
+                android:id="@+id/btnSettlementHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#0D47A1"
+                android:paddingLeft="20dp"
+                android:text="Settlement History"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+
+            <Button
+                android:id="@+id/btnLatestReversal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#0D47A1"
+                android:paddingLeft="20dp"
+                android:text="Latest Reversal Record"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+
+            <Button
+                android:id="@+id/btnForceReversal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#0D47A1"
+                android:enabled="false"
+                android:paddingLeft="20dp"
+                android:text="Force Reversal"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

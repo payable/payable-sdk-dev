@@ -7,8 +7,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
@@ -148,6 +146,27 @@ public class Payable {
 
                 for (PayableEventListener eventListener : eventListeners) {
                     eventListener.onTransactionStatusV2(payableResponse);
+                }
+            } else if (intent.hasExtra("onSettlementHistory")) {
+
+                PayableSettlementHistoryResponse payableResponse = new Gson().fromJson(intent.getStringExtra("onSettlementHistory"), PayableSettlementHistoryResponse.class);
+
+                for (PayableEventListener eventListener : eventListeners) {
+                    eventListener.onSettlementHistory(payableResponse);
+                }
+            } else if (intent.hasExtra("onLatestReversalRecord")) {
+
+                PayableReversalRecordResponse payableResponse = new Gson().fromJson(intent.getStringExtra("onLatestReversalRecord"), PayableReversalRecordResponse.class);
+
+                for (PayableEventListener eventListener : eventListeners) {
+                    eventListener.onLatestReversalRecord(payableResponse);
+                }
+            } else if (intent.hasExtra("onForceReversal")) {
+
+                PayableForceReversalResponse payableResponse = new Gson().fromJson(intent.getStringExtra("onForceReversal"), PayableForceReversalResponse.class);
+
+                for (PayableEventListener eventListener : eventListeners) {
+                    eventListener.onForceReversal(payableResponse);
                 }
             }
         }
@@ -399,25 +418,37 @@ public class Payable {
         return intent;
     }
 
-    private boolean validateRequest(String id, String event) {
-        PayableResponse payableResponse = new PayableResponse();
+    private boolean validateRequest(String event) {
 
         try {
             activity.getPackageManager().getApplicationInfo(POS_PACKAGE, PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
+            PayableResponse payableResponse = new PayableResponse();
             payableResponse.status = APP_NOT_INSTALLED;
             payableResponse.error = "APP_NOT_INSTALLED";
             sendEventBroadcastAsPayable(activity, clientSale.getClientId(), event, new Gson().toJson(payableResponse));
             return false;
         }
 
-        if (event.equals("onTransactionStatusV2")) {
+        return true;
+    }
+
+    private boolean validateRequest(String id, String event) {
+
+        if (!validateRequest(event)) {
+            return false;
+        }
+
+        PayableResponse payableResponse = new PayableResponse();
+
+        if (event.equals("onTransactionStatusV2") || event.equals("onForceReversal")) {
             try {
                 if (id == null) {
                     throw new IllegalArgumentException("Field cannot be null");
                 }
-                if (id.isEmpty() || id.length() > 40) {
-                    throw new IllegalArgumentException("Field must be between 1 and 40 characters long");
+                int maxLength = event.equals("onForceReversal") ? 64 : 40;
+                if (id.isEmpty() || id.length() > maxLength) {
+                    throw new IllegalArgumentException("Field must be between 1 and " + maxLength + " characters long");
                 }
                 if (!id.matches("^[a-zA-Z0-9_\\-/]*$")) {
                     throw new IllegalArgumentException("Field must be alphanumeric and can only contain the characters '_', '-', '/'");
@@ -506,13 +537,58 @@ public class Payable {
         return true;
     }
 
-    // public boolean requestVoid(String txId, int cardType, String receiptSMS, String receiptEmail) {
-    //     Intent intent = getBroadcastIntent("requestVoid");
-    //     intent.putExtra("txId", txId);
-    //     intent.putExtra("cardType", cardType);
-    //     intent.putExtra("receiptSMS", receiptSMS);
-    //     intent.putExtra("receiptEmail", receiptEmail);
-    //     sendBroadcast(intent);
-    //     return true;
-    // }
+    /**
+     * Requests the merchant's settled batches. The result arrives on
+     * {@link PayableEventListener#onSettlementHistory(PayableSettlementHistoryResponse)}.
+     *
+     * @param filter optional paging and filtering options, null for the defaults
+     */
+    public boolean requestSettlementHistory(PayableSettlementFilter filter) {
+
+        if (!validateRequest("onSettlementHistory")) {
+            return false;
+        }
+
+        Intent intent = getBroadcastIntent("requestSettlementHistory");
+        intent.putExtra("filter", new Gson().toJson(filter == null ? new PayableSettlementFilter() : filter));
+        sendBroadcast(intent);
+        return true;
+    }
+
+    public void requestSettlementHistory(int pageId, int pageSize) {
+        requestSettlementHistory(new PayableSettlementFilter(pageId, pageSize));
+    }
+
+    /**
+     * Requests the latest timed out reversal that has not been retried yet. The result arrives on
+     * {@link PayableEventListener#onLatestReversalRecord(PayableReversalRecordResponse)}; pass its
+     * reversal id to {@link #requestForceReversal(String)} to retry it.
+     */
+    public boolean requestLatestReversalRecord() {
+
+        if (!validateRequest("onLatestReversalRecord")) {
+            return false;
+        }
+
+        sendBroadcast(getBroadcastIntent("requestLatestReversalRecord"));
+        return true;
+    }
+
+    /**
+     * Retries the reversal of the given record. The result arrives on
+     * {@link PayableEventListener#onForceReversal(PayableForceReversalResponse)}.
+     *
+     * @param reversalId the reversal id from {@link #requestLatestReversalRecord()}
+     */
+    public boolean requestForceReversal(String reversalId) {
+
+        if (!validateRequest(reversalId, "onForceReversal")) {
+            return false;
+        }
+
+        Intent intent = getBroadcastIntent("requestForceReversal");
+        intent.putExtra("reversalId", reversalId);
+        sendBroadcast(intent);
+        return true;
+    }
 }

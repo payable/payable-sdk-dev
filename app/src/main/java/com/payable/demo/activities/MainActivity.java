@@ -24,8 +24,12 @@ import com.payable.sdk.PayableEventListener;
 import com.payable.sdk.PayableListener;
 import com.payable.sdk.PayableProfile;
 import com.payable.sdk.PayableProgressListener;
+import com.payable.sdk.PayableForceReversalResponse;
 import com.payable.sdk.PayableResponse;
+import com.payable.sdk.PayableReversalRecordResponse;
 import com.payable.sdk.PayableSale;
+import com.payable.sdk.PayableSettlement;
+import com.payable.sdk.PayableSettlementHistoryResponse;
 import com.payable.sdk.PayableTxStatusResponse;
 import com.payable.sdk.PayableTxStatusResponseV2;
 import com.payable.sdk.Picker;
@@ -35,11 +39,13 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements PayableListener {
 
     EditText edtAmount, edtTracking, edtEmail, edtSMS, edtTxnId, edtOrderId;
-    Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid, btnStatus, btnStatusV2;
+    Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid, btnStatus, btnStatusV2,
+            btnSettlementHistory, btnLatestReversal, btnForceReversal;
     TextView txtResponse, actTitle;
 
     double saleAmount = 0;
     String selectedProfile;
+    String pendingReversalId;
 
     // 1. Declare Payable Client
     Payable payableClient;
@@ -68,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         btnVoid = findViewById(R.id.btnVoid);
         btnStatus = findViewById(R.id.btnStatus);
         btnStatusV2 = findViewById(R.id.btnStatusV2);
+        btnSettlementHistory = findViewById(R.id.btnSettlementHistory);
+        btnLatestReversal = findViewById(R.id.btnLatestReversal);
+        btnForceReversal = findViewById(R.id.btnForceReversal);
         txtResponse = findViewById(R.id.txtResponse);
         actTitle = findViewById(R.id.actTitle);
         actTitle.setText("Main Activity");
@@ -184,6 +193,56 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
                     updateFreshTxtResponse("onTransactionStatus: " + payableResponse.toFormattedString());
                 }
             }
+
+            @Override
+            public void onSettlementHistory(PayableSettlementHistoryResponse payableResponse) {
+
+                if (payableResponse.error != null) {
+                    updateFreshTxtResponse("onSettlementHistory: " + payableResponse.status + " error: " + payableResponse.error);
+                    return;
+                }
+
+                List<PayableSettlement> settlements = payableResponse.settlements;
+
+                if (settlements == null || settlements.isEmpty()) {
+                    updateFreshTxtResponse("onSettlementHistory: no settlements");
+                    return;
+                }
+
+                updateFreshTxtResponse("onSettlementHistory: " + settlements.size() + " settlement(s), has more: " + payableResponse.hasMore);
+
+                for (PayableSettlement settlement : settlements) {
+                    updateTxtResponse(settlement.toFormattedString());
+                }
+            }
+
+            @Override
+            public void onLatestReversalRecord(PayableReversalRecordResponse payableResponse) {
+
+                pendingReversalId = payableResponse.reversalId;
+                btnForceReversal.setEnabled(pendingReversalId != null && !pendingReversalId.isEmpty());
+
+                if (payableResponse.error != null) {
+                    updateFreshTxtResponse("onLatestReversalRecord: " + payableResponse.status + " error: " + payableResponse.error);
+                } else if (pendingReversalId == null) {
+                    updateFreshTxtResponse("onLatestReversalRecord: no pending reversal");
+                } else {
+                    updateFreshTxtResponse("onLatestReversalRecord: " + payableResponse.toFormattedString());
+                }
+            }
+
+            @Override
+            public void onForceReversal(PayableForceReversalResponse payableResponse) {
+
+                pendingReversalId = null;
+                btnForceReversal.setEnabled(false);
+
+                if (payableResponse.error != null) {
+                    updateFreshTxtResponse("onForceReversal: " + payableResponse.status + " error: " + payableResponse.error);
+                } else {
+                    updateFreshTxtResponse("onForceReversal: " + payableResponse.toFormattedString());
+                }
+            }
         });
 
         btnVoid.setOnClickListener(v -> {
@@ -202,6 +261,25 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
             if (!edtOrderId.getText().toString().isEmpty()) {
                 Picker.cardTypePicker(MainActivity.this, cardType -> payableClient.requestTransactionStatusV2(edtOrderId.getText().toString(), cardType));
             }
+        });
+
+        btnSettlementHistory.setOnClickListener(v -> payableClient.requestSettlementHistory(0, 20));
+
+        btnLatestReversal.setOnClickListener(v -> payableClient.requestLatestReversalRecord());
+
+        btnForceReversal.setOnClickListener(v -> {
+
+            if (pendingReversalId == null || pendingReversalId.isEmpty()) {
+                Toast.makeText(this, "Fetch the latest reversal record first", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            new AlertDialog.Builder(MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
+                    .setTitle("Force Reversal")
+                    .setMessage("Retry the reversal of record " + pendingReversalId + "?")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Reverse", (dialog, which) -> payableClient.requestForceReversal(pendingReversalId))
+                    .show();
         });
     }
 

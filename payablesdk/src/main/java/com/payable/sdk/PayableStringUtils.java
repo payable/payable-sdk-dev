@@ -57,4 +57,28 @@ public class PayableStringUtils {
                 return String.valueOf(status);
         }
     }
+
+    /**
+     * Maps a currency to its ISO alpha code. Accepts both the POS app's internal currency ids
+     * (1 = LKR, 2 = USD, 3 = GBP, 4 = EUR) and ISO 4217 numeric codes (144, 840, 826, 978), which is
+     * what the reversal APIs return.
+     */
+    public static String currencyToString(int currency) {
+        switch (currency) {
+            case 1:
+            case 144:
+                return "LKR";
+            case 2:
+            case 840:
+                return "USD";
+            case 3:
+            case 826:
+                return "GBP";
+            case 4:
+            case 978:
+                return "EUR";
+            default:
+                return String.valueOf(currency);
+        }
+    }
 }
