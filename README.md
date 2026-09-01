@@ -4,19 +4,9 @@
 
 Android SDK - [android-sdk.payable.lk](https://android-sdk.payable.lk) | [Create Issue](https://github.com/payable/payable-sdk-dev/issues/new)
 
-[![Build Status](https://travis-ci.com/payable/payable-sdk-dev.svg?branch=master)](https://travis-ci.com/payable/payable-sdk-dev)
 [![](https://jitpack.io/v/payable/payable-sdk-dev.svg)](https://jitpack.io/#payable/payable-sdk-dev) 
 
 <hr>
-
-### Initialization 
-
-* Request and install **Sandbox** PAYable APP - Testing purpose
-
-> Payments (`startPayment`) work against any PAYable POS app, but every `request*` method and the event
-> callbacks below talk to **Payable Pro** (`com.cba.payable.wpos`) - it is the only app that declares the
-> SDK's broadcast receiver. With any other PAYable app installed, those requests return `false` and the
-> callback fires with `APP_NOT_INSTALLED (888)`.
 
 ### Initialization
 
