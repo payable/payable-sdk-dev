@@ -205,6 +205,7 @@ payableSale.getMid();
 payableSale.getTxnType();      // Payable.TXN_SWIPE / TXN_EMV / TXN_MANUAL / TXN_NFC
 payableSale.getTxnTypeName();  // the above as a readable string
 payableSale.getTxnStatus();
+payableSale.getBatchNo();
 payableSale.getPaymentMethod();
 payableSale.getReceiptSMS();
 payableSale.getReceiptEmail();
@@ -403,6 +404,10 @@ String txId;
 String error;
 ```
 
+> `onVoid` comes back as the bare `PayableResponse`, so it carries no `batchNo`. A void's batch number
+> is the batch of the **voided sale** - read it with `requestTransactionStatus(txId, cardType)` and
+> take `PayableTxStatusResponse.batchNo`.
+
 * `PayableTxStatusResponse`
 
 ```java
@@ -415,6 +420,7 @@ String orderTracking;
 int txType;
 int currencyType;
 int installment;
+int batchNo;
 String tid;
 String mid;
 String cardNo;
@@ -431,10 +437,11 @@ int cardType
 Date serverTime
 String approvalCode
 int transactionStatus
+int batchNo
 ```
 
-> Unlike the other models, these fields are `private` and have no getters - read them with
-> `toFormattedString()` or `toString()`. The inherited `status`, `txId` and `error` are public as usual.
+> Unlike the other models, these fields are `private` and have no getters (except `getBatchNo()`) -
+> read them with `toFormattedString()` or `toString()`. The inherited `status`, `txId` and `error` are public as usual.
 
 * `PayableSettlementFilter`
 
@@ -494,7 +501,7 @@ String payStatus;
 String last4;
 String cardType;
 String txType;
-String batchNo;
+int batchNo;
 String invoiceNo;
 String bin;
 String appName;
@@ -522,7 +529,9 @@ String invoiceNo;
 > most recent timed out reversal that has not been retried yet (`reversalId` is null when there is
 > nothing pending) - then pass its `reversalId` to `requestForceReversal(String)`. The reversal only
 > succeeded when `isCompleted()` returns true; a completed API call with any other `reversalStatus`
-> comes back with `status` failed and `error` set to that status.
+> comes back with `status` failed and `error` set to that status. The reversal's batch number comes from
+> step one - `PayableReversalRecordResponse.batchNo` - and is not repeated in
+> `PayableForceReversalResponse`.
 
 > Every response type extends `PayableResponse`, so they all carry `status`, `txId` and `error`. On a
 > failed request (`APP_NOT_INSTALLED`, `INVALID_AMOUNT`, `INVALID_ORDER_ID`) the request method returns
