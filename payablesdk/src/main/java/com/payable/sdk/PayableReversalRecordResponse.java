@@ -46,7 +46,7 @@ public class PayableReversalRecordResponse extends PayableResponse {
     public String txType;
 
     @Expose
-    public String batchNo;
+    public int batchNo;
 
     @Expose
     public String invoiceNo;
@@ -85,7 +85,7 @@ public class PayableReversalRecordResponse extends PayableResponse {
                 ", last4='" + last4 + '\'' +
                 ", cardType='" + cardType + '\'' +
                 ", txType='" + txType + '\'' +
-                ", batchNo='" + batchNo + '\'' +
+                ", batchNo=" + batchNo +
                 ", invoiceNo='" + invoiceNo + '\'' +
                 ", bin='" + bin + '\'' +
                 ", appName='" + appName + '\'' +

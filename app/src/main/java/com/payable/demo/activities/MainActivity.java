@@ -377,6 +377,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         responseText += "mid: " + payableSale.getMid() + "\n";
         responseText += "txnType: " + payableSale.getTxnType() + "\n";
         responseText += "txnStatus: " + payableSale.getTxnStatus() + "\n";
+        responseText += "batchNo: " + payableSale.getBatchNo() + "\n";
         responseText += "receiptSMS: " + payableSale.getReceiptSMS() + "\n";
         responseText += "receiptEmail: " + payableSale.getReceiptEmail() + "\n";
         responseText += "paymentMethod: " + payableSale.getPaymentMethod() + "\n";

@@ -43,6 +43,14 @@ public class PayableTxStatusResponseV2 extends PayableResponse {
     @Expose
     private int transactionStatus;
 
+    @SerializedName("batchNo")
+    @Expose
+    private int batchNo;
+
+    public int getBatchNo() {
+        return batchNo;
+    }
+
     @Override
     public String toString() {
         return "TxStatusV2Res{" +
@@ -55,6 +63,7 @@ public class PayableTxStatusResponseV2 extends PayableResponse {
                 ", serverTime=" + serverTime +
                 ", approvalCode='" + approvalCode + '\'' +
                 ", transactionStatus=" + transactionStatus +
+                ", batchNo=" + batchNo +
                 '}';
     }
 
@@ -68,7 +77,8 @@ public class PayableTxStatusResponseV2 extends PayableResponse {
                 + "Card type: " + cardTypeToString(cardType) + "\n\n"
                 + "Server time: " + (serverTime == null ? null : serverTime.toLocaleString()) + "\n\n"
                 + "Approval code: " + approvalCode + "\n\n"
-                + "Transaction status: " + statusToString(transactionStatus) + "\n\n";
+                + "Transaction status: " + statusToString(transactionStatus) + "\n\n"
+                + "Batch no: " + batchNo + "\n\n";
     }
 
 

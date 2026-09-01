@@ -16,6 +16,7 @@ public class PayableSale {
     private String mid;
     private int txtType;
     private int txnStatus;
+    private int batchNo;
     private String out_trade_no;
     private String receiptSMS;
     private String receiptEmail;
@@ -95,6 +96,14 @@ public class PayableSale {
 
     protected void setTxnStatus(int txnStatus) {
         this.txnStatus = txnStatus;
+    }
+
+    public int getBatchNo() {
+        return batchNo;
+    }
+
+    protected void setBatchNo(int batchNo) {
+        this.batchNo = batchNo;
     }
 
     public String getReceiptSMS() {

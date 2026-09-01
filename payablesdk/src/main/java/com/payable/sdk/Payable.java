@@ -206,6 +206,7 @@ public class Payable {
             clientSale.setMid(data.getStringExtra("mid"));
             clientSale.setTxnType(data.getIntExtra("txnType", -1));
             clientSale.setTxnStatus(data.getIntExtra("txnStatus", 0));
+            clientSale.setBatchNo(data.getIntExtra("batchNo", 0));
             clientSale.setOut_trade_no(data.getStringExtra("out_trade_no"));
             clientSale.setReceiptSMS(data.getStringExtra("receiptSMS"));
             clientSale.setReceiptEmail(data.getStringExtra("receiptEmail"));

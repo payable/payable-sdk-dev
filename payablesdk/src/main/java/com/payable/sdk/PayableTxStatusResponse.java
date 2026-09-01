@@ -35,6 +35,9 @@ public class PayableTxStatusResponse extends PayableResponse {
     public int installment;
 
     @Expose
+    public int batchNo;
+
+    @Expose
     public String tid;
 
     @Expose
@@ -58,6 +61,7 @@ public class PayableTxStatusResponse extends PayableResponse {
                 ", txType=" + txType +
                 ", currencyType=" + currencyType +
                 ", installment=" + installment +
+                ", batchNo=" + batchNo +
                 ", tid='" + tid + '\'' +
                 ", mid='" + mid + '\'' +
                 ", cardNo='" + cardNo + '\'' +
@@ -78,6 +82,7 @@ public class PayableTxStatusResponse extends PayableResponse {
                 + "Transaction type: " + txType + "\n"
                 + "Currency type: " + currencyType + "\n"
                 + "Installment: " + installment + "\n"
+                + "Batch no: " + batchNo + "\n"
                 + "TID: " + tid + "\n"
                 + "MID: " + mid + "\n"
                 + "Card number: " + cardNo + "\n";
