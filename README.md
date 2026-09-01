@@ -61,6 +61,8 @@ import com.payable.sdk.PayableResponse;
 import com.payable.sdk.PayableReversalRecordResponse;
 import com.payable.sdk.PayableSettlement;
 import com.payable.sdk.PayableSettlementHistoryResponse;
+import com.payable.sdk.PayableTransaction;
+import com.payable.sdk.PayableTransactionHistoryResponse;
 import com.payable.sdk.PayableTxStatusResponse;
 import com.payable.sdk.PayableTxStatusResponseV2;
 import com.payable.sdk.Picker;
@@ -349,6 +351,11 @@ payableClient.registerEventListener(new PayableEventListener() {
     }
 
     @Override
+    public void onTransactionHistory(PayableTransactionHistoryResponse payableResponse) {
+
+    }
+
+    @Override
     public void onLatestReversalRecord(PayableReversalRecordResponse payableResponse) {
 
     }
@@ -360,8 +367,8 @@ payableClient.registerEventListener(new PayableEventListener() {
 });
 ```
 
-> `onSettlementHistory`, `onLatestReversalRecord` and `onForceReversal` are optional - they have
-> default no-op implementations, so you only override the ones you use.
+> `onSettlementHistory`, `onTransactionHistory`, `onLatestReversalRecord` and `onForceReversal`
+> are optional - they have default no-op implementations, so you only override the ones you use.
 
 ##### Unregister event listener
 
@@ -382,6 +389,7 @@ protected void onDestroy() {
 | `boolean requestTransactionStatus(String txId, int cardType)` | `onTransactionStatus(PayableTxStatusResponse payableResponse)`
 | `boolean requestTransactionStatusV2(String orderId, int cardType)` | `onTransactionStatusV2(PayableTxStatusResponseV2 payableResponse)`
 | `boolean requestSettlementHistory(PayableSettlementFilter filter)`<br/>`void requestSettlementHistory(int pageId, int pageSize)` | `onSettlementHistory(PayableSettlementHistoryResponse payableResponse)`
+| `boolean requestTransactionHistory(PayableTransactionFilter filter)`<br/>`void requestTransactionHistory(int pageId, int pageSize)` | `onTransactionHistory(PayableTransactionHistoryResponse payableResponse)`
 | `boolean requestLatestReversalRecord()` | `onLatestReversalRecord(PayableReversalRecordResponse payableResponse)`
 | `boolean requestForceReversal(String reversalId)` | `onForceReversal(PayableForceReversalResponse payableResponse)`
 
@@ -487,6 +495,57 @@ String settledDate;
 String printedDate;
 ```
 
+* `PayableTransactionFilter`
+
+Paging only. `pageId` is zero based; `pageSize` defaults to 20 on the POS app when left at 0 and is
+capped at 100.
+
+```java
+int pageId;
+int pageSize;
+```
+
+> There is deliberately no date range. `requestTransactionHistory` always returns the **last 3 days**
+> of closed transactions. The POS app recomputes that window on every request and ignores any dates
+> sent to it, so the range cannot be widened from the SDK.
+
+* `PayableTransactionHistoryResponse`
+
+```java
+List<PayableTransaction> transactions;
+int pageId;
+boolean hasMore;          // true when there is at least one more page to request
+String fromDate;          // start of the window the POS app used, always 3 days back
+String toDate;            // end of the window the POS app used
+```
+
+* `PayableTransaction`
+
+```java
+long txId;
+String cardHolder;
+String cardNo;            // masked, e.g. 462834******1234
+String ccLast4;
+double amount;
+int cardType;             // Payable.CARD_TYPE_*
+int txnType;              // Payable.TXN_*
+int txType;
+int status;               // Payable.STATUS_OPEN / STATUS_CLOSE / STATUS_OPEN_VOID / STATUS_CLOSE_VOID
+String time;
+String approvalCode;
+String rrn;
+int batchNo;
+String merchantInvoiceId;
+int currencyType;
+int installment;
+String tid;
+String mid;
+String appName;
+String aid;
+int stn;
+String invoice;
+```
+
 * `PayableReversalRecordResponse`
 
 ```java
@@ -548,7 +607,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
     EditText edtAmount, edtTracking, edtEmail, edtSMS, edtTxnId, edtOrderId;
     Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid, btnStatus, btnStatusV2,
-            btnSettlementHistory, btnLatestReversal, btnForceReversal;
+            btnSettlementHistory, btnTransactionHistory, btnLatestReversal, btnForceReversal;
     TextView txtResponse, actTitle;
 
     double saleAmount = 0;
@@ -577,6 +636,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         btnStatus = findViewById(R.id.btnStatus);
         btnStatusV2 = findViewById(R.id.btnStatusV2);
         btnSettlementHistory = findViewById(R.id.btnSettlementHistory);
+        btnTransactionHistory = findViewById(R.id.btnTransactionHistory);
         btnLatestReversal = findViewById(R.id.btnLatestReversal);
         btnForceReversal = findViewById(R.id.btnForceReversal);
         txtResponse = findViewById(R.id.txtResponse);
@@ -734,6 +794,30 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
             }
 
             @Override
+            public void onTransactionHistory(PayableTransactionHistoryResponse payableResponse) {
+
+                if (payableResponse.error != null) {
+                    updateFreshTxtResponse("onTransactionHistory: " + payableResponse.status + " error: " + payableResponse.error);
+                    return;
+                }
+
+                List<PayableTransaction> transactions = payableResponse.transactions;
+
+                if (transactions == null || transactions.isEmpty()) {
+                    updateFreshTxtResponse("onTransactionHistory: no transactions");
+                    return;
+                }
+
+                updateFreshTxtResponse("onTransactionHistory: " + transactions.size() + " transaction(s) from "
+                        + payableResponse.fromDate + " to " + payableResponse.toDate
+                        + ", has more: " + payableResponse.hasMore);
+
+                for (PayableTransaction transaction : transactions) {
+                    updateTxtResponse(transaction.toFormattedString());
+                }
+            }
+
+            @Override
             public void onLatestReversalRecord(PayableReversalRecordResponse payableResponse) {
 
                 pendingReversalId = payableResponse.reversalId;
@@ -781,6 +865,8 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         });
 
         btnSettlementHistory.setOnClickListener(v -> payableClient.requestSettlementHistory(0, 20));
+
+        btnTransactionHistory.setOnClickListener(v -> payableClient.requestTransactionHistory(0, 20));
 
         btnLatestReversal.setOnClickListener(v -> payableClient.requestLatestReversalRecord());
 
