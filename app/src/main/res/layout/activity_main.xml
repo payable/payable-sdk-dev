@@ -135,6 +135,11 @@
                 android:text="Settlement History" />
 
             <Button
+                android:id="@+id/btnTransactionHistory"
+                style="@style/PayableButton"
+                android:text="Transaction History (3 days)" />
+
+            <Button
                 android:id="@+id/btnLatestReversal"
                 style="@style/PayableButton"
                 android:text="Latest Reversal Record" />

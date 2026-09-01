@@ -154,6 +154,13 @@ public class Payable {
                 for (PayableEventListener eventListener : eventListeners) {
                     eventListener.onSettlementHistory(payableResponse);
                 }
+            } else if (intent.hasExtra("onTransactionHistory")) {
+
+                PayableTransactionHistoryResponse payableResponse = new Gson().fromJson(intent.getStringExtra("onTransactionHistory"), PayableTransactionHistoryResponse.class);
+
+                for (PayableEventListener eventListener : eventListeners) {
+                    eventListener.onTransactionHistory(payableResponse);
+                }
             } else if (intent.hasExtra("onLatestReversalRecord")) {
 
                 PayableReversalRecordResponse payableResponse = new Gson().fromJson(intent.getStringExtra("onLatestReversalRecord"), PayableReversalRecordResponse.class);
@@ -561,6 +568,31 @@ public class Payable {
 
     public void requestSettlementHistory(int pageId, int pageSize) {
         requestSettlementHistory(new PayableSettlementFilter(pageId, pageSize));
+    }
+
+    /**
+     * Requests the terminal's closed card transactions from the last 3 days. The result arrives on
+     * {@link PayableEventListener#onTransactionHistory(PayableTransactionHistoryResponse)}.
+     * <p>
+     * The 3 day window is fixed by the POS app, which recomputes it on every request - there is no
+     * way to widen it from here.
+     *
+     * @param filter optional paging options, null for the defaults
+     */
+    public boolean requestTransactionHistory(PayableTransactionFilter filter) {
+
+        if (!validateRequest("onTransactionHistory")) {
+            return false;
+        }
+
+        Intent intent = getBroadcastIntent("requestTransactionHistory");
+        intent.putExtra("filter", new Gson().toJson(filter == null ? new PayableTransactionFilter() : filter));
+        sendBroadcast(intent);
+        return true;
+    }
+
+    public void requestTransactionHistory(int pageId, int pageSize) {
+        requestTransactionHistory(new PayableTransactionFilter(pageId, pageSize));
     }
 
     /**

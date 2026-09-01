@@ -15,6 +15,10 @@ public interface PayableEventListener {
     default void onSettlementHistory(PayableSettlementHistoryResponse payableResponse) {
     }
 
+    /** Optional - the last 3 days of closed transactions. */
+    default void onTransactionHistory(PayableTransactionHistoryResponse payableResponse) {
+    }
+
     default void onLatestReversalRecord(PayableReversalRecordResponse payableResponse) {
     }
 

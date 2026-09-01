@@ -32,6 +32,8 @@ import com.payable.sdk.PayableReversalRecordResponse;
 import com.payable.sdk.PayableSale;
 import com.payable.sdk.PayableSettlement;
 import com.payable.sdk.PayableSettlementHistoryResponse;
+import com.payable.sdk.PayableTransaction;
+import com.payable.sdk.PayableTransactionHistoryResponse;
 import com.payable.sdk.PayableTxStatusResponse;
 import com.payable.sdk.PayableTxStatusResponseV2;
 import com.payable.sdk.Picker;
@@ -42,7 +44,8 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
 
     EditText edtAmount, edtTracking, edtEmail, edtSMS, edtTxnId, edtOrderId;
     Button btnPayCard, btnPayWallet, btnPay, btnProfile, btnVoid, btnStatus, btnStatusV2,
-            btnSettlementHistory, btnLatestReversal, btnForceReversal, btnClearResponse;
+            btnSettlementHistory, btnTransactionHistory, btnLatestReversal, btnForceReversal,
+            btnClearResponse;
     TextView txtResponse, actTitle;
     ScrollView scrollView;
 
@@ -78,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         btnStatus = findViewById(R.id.btnStatus);
         btnStatusV2 = findViewById(R.id.btnStatusV2);
         btnSettlementHistory = findViewById(R.id.btnSettlementHistory);
+        btnTransactionHistory = findViewById(R.id.btnTransactionHistory);
         btnLatestReversal = findViewById(R.id.btnLatestReversal);
         btnForceReversal = findViewById(R.id.btnForceReversal);
         btnClearResponse = findViewById(R.id.btnClearResponse);
@@ -222,6 +226,30 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
             }
 
             @Override
+            public void onTransactionHistory(PayableTransactionHistoryResponse payableResponse) {
+
+                if (payableResponse.error != null) {
+                    updateFreshTxtResponse("onTransactionHistory: " + payableResponse.status + " error: " + payableResponse.error);
+                    return;
+                }
+
+                List<PayableTransaction> transactions = payableResponse.transactions;
+
+                if (transactions == null || transactions.isEmpty()) {
+                    updateFreshTxtResponse("onTransactionHistory: no transactions");
+                    return;
+                }
+
+                updateFreshTxtResponse("onTransactionHistory: " + transactions.size() + " transaction(s) from "
+                        + payableResponse.fromDate + " to " + payableResponse.toDate
+                        + ", has more: " + payableResponse.hasMore);
+
+                for (PayableTransaction transaction : transactions) {
+                    updateTxtResponse(transaction.toFormattedString());
+                }
+            }
+
+            @Override
             public void onLatestReversalRecord(PayableReversalRecordResponse payableResponse) {
 
                 pendingReversalId = payableResponse.reversalId;
@@ -271,6 +299,8 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
         btnClearResponse.setOnClickListener(v -> txtResponse.setText(""));
 
         btnSettlementHistory.setOnClickListener(v -> payableClient.requestSettlementHistory(0, 20));
+
+        btnTransactionHistory.setOnClickListener(v -> payableClient.requestTransactionHistory(0, 20));
 
         btnLatestReversal.setOnClickListener(v -> payableClient.requestLatestReversalRecord());
 
