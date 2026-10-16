@@ -72,7 +72,6 @@ public class Payable {
     private static Payable payable;
     private PayableSale clientSale;
     private PayableListener payableListener;
-    private WaitDialog waitDialog;
 
     List<PayableProgressListener> progressListeners = new ArrayList<>();
 
@@ -260,9 +259,6 @@ public class Payable {
     @Deprecated
     public void startPayment(double saleAmount, int paymentMethod, String jsonData, PayableListener payableListenerLocal) {
 
-        waitDialog = waitDialog == null ? new WaitDialog() : waitDialog;
-        waitDialog.showDialog(activity);
-
         this.payableListener = payableListenerLocal;
 
         clientSale.setSaleAmount(saleAmount);
@@ -277,22 +273,16 @@ public class Payable {
                     payable.activity.startActivityForResult(getPaymentIntent(), REQUEST_CODE);
                     payable.activity.overridePendingTransition(R.anim.enter, R.anim.exit);
                 } catch (ActivityNotFoundException ex) {
-                    waitDialog.dismiss();
                     clientSale.setMessage("APP_NOT_INSTALLED");
                     clientSale.setStatusCode(APP_NOT_INSTALLED);
                     payableListener.onPaymentFailure(clientSale);
                 }
 
             } else {
-                waitDialog.dismiss();
                 clientSale.setMessage("INVALID_AMOUNT");
                 clientSale.setStatusCode(INVALID_AMOUNT);
                 payableListener.onPaymentFailure(clientSale);
             }
-
-        } else {
-            // The caller aborted the sale from onPaymentStart, so nothing will dismiss the dialog.
-            waitDialog.dismiss();
         }
     }
 
@@ -330,9 +320,6 @@ public class Payable {
     public void handleResponse(int requestCode, Intent data) {
 
         if (requestCode == REQUEST_CODE) {
-
-            waitDialog.dismiss();
-
             if (payable != null && payable.payableListener != null) {
                 payable.setResponseCallback(data, payable.payableListener);
             }
