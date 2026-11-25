@@ -26,8 +26,8 @@ android {
         applicationId "com.payable.demo"
         minSdkVersion 21
         targetSdkVersion 35
-        versionCode 7
-        versionName "4.2.1"
+        versionCode 8
+        versionName "4.2.2"
     }
     applicationVariants.configureEach { variant ->
         variant.outputs.configureEach {
