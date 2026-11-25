@@ -426,20 +426,36 @@ String cardNo;
 
 * `PayableTxStatusResponseV2`
 
+Read it with the same getters as the `PayableSale` from `onPaymentSuccess`:
+
 ```java
-String txKeyId
-String cardHolder
-String ccLast4
-BigDecimal amount
-int cardType
-Date serverTime
-String approvalCode
-int transactionStatus
-int batchNo
+int getStatusCode()
+String getTxId()
+String getMessage()          // error, if any
+double getSaleAmount()
+int getPaymentMethod()       // METHOD_CARD or METHOD_WALLET
+String getCcLast4()
+String getCardNo()
+int getCardType()
+String getTerminalId()
+String getMid()
+int getTxnType()
+String getTxnTypeName()
+int getTxnStatus()
+int getBatchNo()
+String getOrderTracking()
 ```
 
-> Unlike the other models, these fields are `private` and have no getters (except `getBatchNo()`) -
-> read them with `toFormattedString()` or `toString()`. The inherited `status`, `txId` and `error` are public as usual.
+plus the V2-only `getTxKeyId()`, `getCardHolder()`, `getAmount()` (`BigDecimal`), `getServerTime()`
+and `getApprovalCode()`.
+
+> The V2 lookup by order id does not return the batch number, TID, MID, card number, transaction type
+> or order tracking id. The SDK fills them in by sending a follow-up `requestTransactionStatus` with the
+> returned `txId` (and the same `cardType`), so `onTransactionStatusV2` fires once both replies are in.
+> That internal lookup does **not** fire `onTransactionStatus`. If the follow-up fails, the callback
+> still fires with the V2 fields filled, but `status` and `error` come from the failed lookup and
+> `getBatchNo()` is 0. `PayableSale`'s `receiptSMS`, `receiptEmail`, `out_trade_no` and `jsonData`
+> have no counterpart, because neither lookup returns them.
 
 * `PayableSettlementFilter`
 
@@ -755,7 +771,7 @@ public class MainActivity extends AppCompatActivity implements PayableListener {
             @Override
             public void onTransactionStatusV2(PayableTxStatusResponseV2 payableResponse) {
                 if (payableResponse.error != null) {
-                    updateFreshTxtResponse("onTransactionStatus: " + payableResponse.status + " txId: " + " error: " + payableResponse.error);
+                    updateFreshTxtResponse("onTransactionStatusV2: " + payableResponse.status + " txId: " + payableResponse.txId + " error: " + payableResponse.error);
                 } else {
                     updateFreshTxtResponse("onTransactionStatus: " + payableResponse.toFormattedString());
                 }

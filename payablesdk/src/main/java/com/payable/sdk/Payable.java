@@ -16,7 +16,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Payable {
     private static final String TAG = "Payable";
@@ -136,6 +138,19 @@ public class Payable {
 
                 PayableTxStatusResponse payableResponse = new Gson().fromJson(intent.getStringExtra("onTransactionStatus"), PayableTxStatusResponse.class);
 
+                // A reply to our own follow-up lookup for a status V2 request
+                PayableTxStatusResponseV2 statusV2 = pendingStatusV2.remove(payableResponse.txId);
+                if (statusV2 != null) {
+                    if (payableResponse.status == STATUS_SUCCESS) {
+                        statusV2.merge(payableResponse);
+                    } else {
+                        statusV2.status = payableResponse.status;
+                        statusV2.error = payableResponse.error;
+                    }
+                    dispatchTransactionStatusV2(statusV2);
+                    return;
+                }
+
                 for (PayableEventListener eventListener : eventListeners) {
                     eventListener.onTransactionStatus(payableResponse);
                 }
@@ -143,9 +158,20 @@ public class Payable {
 
                 PayableTxStatusResponseV2 payableResponse = new Gson().fromJson(intent.getStringExtra("onTransactionStatusV2"), PayableTxStatusResponseV2.class);
 
-                for (PayableEventListener eventListener : eventListeners) {
-                    eventListener.onTransactionStatusV2(payableResponse);
+                // The V2 lookup has no batch, TID, MID or card number, so fetch them by txId
+                // with the V1 lookup and dispatch once that replies. Payable Pro is running by
+                // now, so the cold start no-reply issue does not apply to the second request.
+                if (payableResponse.status == STATUS_SUCCESS && isValidTxId(payableResponse.txId)) {
+                    pendingStatusV2.put(payableResponse.txId, payableResponse);
+                    int cardType = statusV2CardType != 0 ? statusV2CardType : payableResponse.getCardType();
+                    Intent request = getBroadcastIntent("requestTxStatus");
+                    request.putExtra("txId", payableResponse.txId);
+                    request.putExtra("cardType", cardType);
+                    sendBroadcast(request);
+                    return;
                 }
+
+                dispatchTransactionStatusV2(payableResponse);
             } else if (intent.hasExtra("onSettlementHistory")) {
 
                 PayableSettlementHistoryResponse payableResponse = new Gson().fromJson(intent.getStringExtra("onSettlementHistory"), PayableSettlementHistoryResponse.class);
@@ -177,6 +203,23 @@ public class Payable {
             }
         }
     };
+
+    private final Map<String, PayableTxStatusResponseV2> pendingStatusV2 = new HashMap<>();
+    private int statusV2CardType;
+
+    private void dispatchTransactionStatusV2(PayableTxStatusResponseV2 payableResponse) {
+        for (PayableEventListener eventListener : eventListeners) {
+            eventListener.onTransactionStatusV2(payableResponse);
+        }
+    }
+
+    private static boolean isValidTxId(String txId) {
+        try {
+            return txId != null && Long.parseLong(txId) > 0;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
 
     protected Payable() {
         clientSale = new PayableSale();
@@ -527,6 +570,8 @@ public class Payable {
         if (!validateRequest(orderId, "onTransactionStatusV2")) {
             return false;
         }
+
+        statusV2CardType = cardType;
 
         Intent intent = getBroadcastIntent("requestTxStatusV2");
         intent.putExtra("orderId", orderId);
